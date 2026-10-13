@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="שתי אפליקציות בעברית מלאה שמסדרות לך את היום: משימות, לו״ז, תזכורות, יומן, וואטסאפ וזמני שבת. חינם ובלי פרסומות.">
+<meta property="og:title" content="שילולו״ז ושילולוז דיילי · פחות לזכור. יותר לחיות.">
+<meta property="og:description" content="משימות, לו״ז, תזכורות ושעון מעורר, יומן הטלפון, וואטסאפ וזמני שבת — ותכנון יום רגוע. חינם, לאנדרואיד.">
+<meta property="og:image" content="https://bashilo1010-dot.github.io/img/poster.jpg">
+<meta property="og:type" content="website">
+<link rel="icon" href="img/luz-icon.png">
+<title>שילולו״ז ושילולוז דיילי</title>
+<script>document.documentElement.lang = "he"; document.documentElement.dir = "rtl";</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800;900&display=swap">
+<style>
+/* Layout: one long scroll that follows a single day — morning hero, a day timeline of features, the Daily app at dusk, then the ask. */
+:root {
+  --paper: #F6F6F2;      /* the apps' own background */
+  --ink: #1D2218;
+  --ink-2: #565E4E;
+  --line: #DFE2D6;
+  --olive: #5B6B2F;      /* שילולו״ז */
+  --olive-ink: #3F4B1F;
+  --lime: #C9DA7A;
+  --navy: #2F4C8A;       /* שילולוז דיילי */
+  --navy-soft: #E4EAF6;
+  --night: #0F140C;
+  --card: #FFFFFF;
+  --wa: #1FA855;
+  --font: "Rubik", "Segoe UI", Arial, system-ui, sans-serif;
+  --shadow: 0 18px 50px rgba(30, 40, 15, .14);
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #12160F; --ink: #ECEFE4; --ink-2: #A9B19D; --line: #283021; --olive: #9CB25A; --olive-ink: #C9DA7A;
+  --navy: #8FB0F0; --navy-soft: #1A2338; --card: #1A2016; --night: #090C07; --shadow: 0 18px 50px rgba(0,0,0,.45); color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --paper: #12160F; --ink: #ECEFE4; --ink-2: #A9B19D; --line: #283021; --olive: #9CB25A; --olive-ink: #C9DA7A;
+  --navy: #8FB0F0; --navy-soft: #1A2338; --card: #1A2016; --night: #090C07; --shadow: 0 18px 50px rgba(0,0,0,.45); color-scheme: dark; }
+
+* { box-sizing: border-box; }
+html { direction: rtl; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.65; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-inline: 20px; }
+h1, h2, h3 { line-height: 1.1; text-wrap: balance; margin: 0; }
+p { margin: 0; }
+a { color: inherit; }
+img { display: block; max-width: 100%; }
+:focus-visible { outline: 3px solid var(--lime); outline-offset: 3px; border-radius: 8px; }
+
+/* hero: the night-to-morning band, in the promo video's colours */
+.hero { background: radial-gradient(ellipse 70% 60% at 85% 20%, rgba(201,218,122,.22), transparent 60%), radial-gradient(ellipse 60% 70% at 10% 90%, rgba(91,107,47,.55), transparent 65%), var(--night); color: #F2F5EA; padding-block: 40px 0; overflow: hidden; }
+.hero .wrap { display: grid; grid-template-columns: 1.1fr .9fr; gap: 40px; align-items: end; }
+.brandrow { display: flex; gap: 10px; align-items: center; margin-bottom: 34px; }
+.brandrow img { width: 44px; height: 44px; border-radius: 12px; }
+.brandrow span { font-weight: 700; font-size: 15px; letter-spacing: .02em; color: rgba(242,245,234,.75); }
+.hero h1 { font-size: clamp(48px, 8vw, 92px); font-weight: 900; letter-spacing: -.02em; }
+.hero h1 em { font-style: normal; color: var(--lime); display: block; }
+.hero .lead { margin-top: 22px; font-size: 20px; color: rgba(242,245,234,.82); max-width: 34em; }
+.cta-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 30px; }
+.btn-wa { display: inline-flex; align-items: center; gap: 12px; background: var(--wa); color: #fff; text-decoration: none; font-weight: 700; font-size: 19px; padding: 16px 26px; border-radius: 999px; box-shadow: 0 10px 30px rgba(31,168,85,.35); transition: transform .15s; }
+.btn-wa:hover { transform: translateY(-2px); }
+.btn-wa svg { flex: none; }
+.tag { font-size: 14px; color: rgba(242,245,234,.7); display: inline-flex; gap: 8px; align-items: center; }
+.tag b { background: rgba(201,218,122,.16); color: var(--lime); border-radius: 999px; padding: 4px 12px; font-weight: 600; }
+.hero-phones { position: relative; height: 560px; }
+.phone { border-radius: 34px; background: #050505; padding: 8px; box-shadow: 0 30px 80px rgba(0,0,0,.55); }
+.phone img { border-radius: 27px; }
+.hero-phones .p1 { position: absolute; width: 250px; left: 12%; bottom: -70px; transform: rotate(-5deg); }
+.hero-phones .p2 { position: absolute; width: 220px; left: 52%; bottom: -120px; transform: rotate(6deg); }
+
+/* strip of facts */
+.facts { background: var(--olive); color: #F2F5EA; }
+.facts ul { list-style: none; margin: 0; padding: 18px 0; display: flex; flex-wrap: wrap; gap: 10px 34px; justify-content: center; font-weight: 600; font-size: 15.5px; }
+.facts li::before { content: "✓"; color: var(--lime); margin-left: 8px; }
+
+section { padding-block: 84px; }
+.eyebrow { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--olive); }
+.sec-head { max-width: 640px; margin-bottom: 44px; }
+.sec-head h2 { font-size: clamp(34px, 5vw, 50px); font-weight: 800; margin-top: 8px; }
+.sec-head p { margin-top: 14px; color: var(--ink-2); font-size: 18px; }
+
+/* the day: each feature hangs on the time it happens */
+.day { display: grid; gap: 0; position: relative; }
+.slot { display: grid; grid-template-columns: 96px 1fr 260px; gap: 28px; align-items: center; padding-block: 28px; border-top: 1px solid var(--line); }
+.slot:first-child { border-top: 0; }
+.time { font-variant-numeric: tabular-nums; font-weight: 800; font-size: 26px; color: var(--olive); }
+.time small { display: block; font-size: 13px; font-weight: 500; color: var(--ink-2); letter-spacing: .02em; }
+.slot h3 { font-size: 28px; font-weight: 800; }
+.slot p { margin-top: 8px; color: var(--ink-2); max-width: 36em; }
+.slot ul { margin: 12px 0 0; padding: 0 18px 0 0; color: var(--ink); }
+.slot li { margin: 4px 0; }
+.example { display: inline-block; margin-top: 12px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 8px 14px; font-size: 15px; color: var(--ink); }
+.example b { color: var(--olive); }
+.shot { justify-self: center; width: 230px; }
+.slot.zoom .shot { width: 230px; }
+
+/* more abilities grid */
+.more { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 56px; }
+.more div { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 20px; }
+.more b { display: block; font-size: 18px; margin-bottom: 4px; }
+.more span { color: var(--ink-2); font-size: 15.5px; }
+
+/* daily: dusk, in the Daily blue */
+.daily { background: linear-gradient(180deg, var(--navy-soft), var(--paper)); }
+.daily .eyebrow, .daily .time { color: var(--navy); }
+.daily .brandrow span { color: var(--navy); }
+.daily-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 26px; }
+.dcard { display: flex; flex-direction: column; gap: 14px; }
+.dcard .phone { width: 100%; max-width: 250px; align-self: center; }
+.dcard h3 { font-size: 22px; font-weight: 800; }
+.dcard p { color: var(--ink-2); font-size: 16px; }
+.daily-list { margin-top: 40px; display: flex; flex-wrap: wrap; gap: 10px; }
+.daily-list span { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; font-size: 15px; }
+
+/* video */
+.watch .wrap { display: grid; grid-template-columns: 1fr 320px; gap: 50px; align-items: center; }
+.watch video { width: 100%; max-width: 320px; border-radius: 26px; background: #000; box-shadow: var(--shadow); aspect-ratio: 9 / 16; }
+
+/* privacy + faq */
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; }
+.priv { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 28px; }
+.priv h3, .faq h3 { font-size: 24px; font-weight: 800; margin-bottom: 14px; }
+.priv ul { margin: 0; padding: 0 18px 0 0; }
+.priv li { margin: 8px 0; }
+details { border-bottom: 1px solid var(--line); padding-block: 14px; }
+summary { cursor: pointer; font-weight: 700; font-size: 17.5px; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+summary::after { content: "+"; color: var(--olive); font-weight: 800; }
+details[open] summary::after { content: "−"; }
+details p { margin-top: 8px; color: var(--ink-2); }
+
+/* final ask */
+.ask { background: var(--night); color: #F2F5EA; text-align: center; }
+.ask h2 { font-size: clamp(38px, 6vw, 64px); font-weight: 900; }
+.ask h2 em { font-style: normal; color: var(--lime); }
+.ask p { margin: 16px auto 0; max-width: 34em; color: rgba(242,245,234,.8); font-size: 18px; }
+.ask .cta-row { justify-content: center; }
+.steps { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 36px; }
+.steps div { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 16px; padding: 14px 18px; min-width: 0; max-width: 260px; text-align: right; font-size: 15px; }
+.steps b { display: block; color: var(--lime); font-size: 14px; margin-bottom: 2px; }
+.num { margin-top: 26px; font-size: 15px; color: rgba(242,245,234,.7); display: flex; gap: 10px; justify-content: center; align-items: center; flex-wrap: wrap; }
+.num code { font-family: var(--font); font-size: 18px; font-weight: 700; color: #fff; direction: ltr; unicode-bidi: isolate; user-select: all; }
+.copy { background: transparent; color: var(--lime); border: 1px solid rgba(201,218,122,.5); border-radius: 999px; padding: 6px 14px; font: inherit; font-size: 14px; cursor: pointer; }
+footer { background: var(--night); color: rgba(242,245,234,.55); font-size: 13.5px; text-align: center; padding-block: 0 40px; }
+
+@media (max-width: 860px) {
+  .hero .wrap, .watch .wrap, .two { grid-template-columns: 1fr; }
+  .hero-phones { height: 420px; }
+  .hero-phones .p1 { width: 200px; left: 8%; bottom: -60px; }
+  .hero-phones .p2 { width: 180px; left: 50%; bottom: -100px; }
+  .slot { grid-template-columns: 1fr; gap: 14px; }
+  .shot { justify-self: start; width: 210px; }
+  .more, .daily-grid { grid-template-columns: 1fr; }
+  .watch video { justify-self: center; }
+  section { padding-block: 60px; }
+}
+@media (prefers-reduced-motion: reduce) { .btn-wa { transition: none; } }
+</style>
+
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <div>
+      <div class="brandrow"><img src="img/luz-icon.png" alt=""><img src="img/daily-icon.png" alt=""><span>שילולו״ז · שילולוז דיילי</span></div>
+      <h1>פחות לזכור.<em>יותר לחיות.</em></h1>
+      <p class="lead">שתי אפליקציות בעברית מלאה שמסדרות לך את היום: משימות, לו״ז, תזכורות ושעון מעורר, יומן הטלפון, וואטסאפ וזמני שבת — ותכנון יום רגוע מהבוקר ועד סיכום הערב.</p>
+      <div class="cta-row">
+        <a class="btn-wa" data-wa href="#ask"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg>אני רוצה את האפליקציה</a>
+        <span class="tag"><b>חינם</b><b>בלי פרסומות</b><b>אנדרואיד</b></span>
+      </div>
+    </div>
+    <div class="hero-phones" aria-hidden="true">
+      <div class="phone p2"><img src="img/daily-plan.jpg" alt=""></div>
+      <div class="phone p1"><img src="img/luz-today.jpg" alt="מסך היום בשילולו״ז"></div>
+    </div>
+  </div>
+</header>
+
+<div class="facts"><ul>
+  <li>עברית מלאה, מימין לשמאל</li><li>עובד גם בלי חשבון</li><li>מסתנכרן עם Google Calendar</li><li>שבת, חגים ותאריך עברי</li><li>שתי אפליקציות, משימות משותפות</li>
+</ul></div>
+
+<section id="day">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">שילולו״ז · יום אחד</div>
+      <h2>ככה נראה יום שישי עם שילולו״ז</h2>
+      <p>משימות, פגישות ותזכורות על ציר אחד — כדי שתראה בכל רגע מה עכשיו, מה הבא, וכמה זמן באמת נשאר לך.</p>
+    </div>
+    <div class="day">
+      <div class="slot">
+        <div class="time">07:40<small>בוקר</small></div>
+        <div><h3>כל היום שלך במסך אחד</h3>
+          <p>מסך "היום" מחבר משימות, אירועים מהיומן ותזכורות לציר זמן אחד, עם סיכום בוקר קצר וחישוב של כמה זמן מתוכנן מול כמה נשאר.</p>
+          <ul><li>ציר יום עם גרירה לשינוי שעה</li><li>סיכום בוקר וסיכום ערב בהתראה</li><li>ווידג'טים למסך הבית: היום, ודחוף בימים הקרובים</li></ul></div>
+        <div class="phone shot"><img src="img/luz-today.jpg" alt="מסך היום עם ציר זמן"></div>
+      </div>
+      <div class="slot">
+        <div class="time">07:45<small>הוספה מהירה</small></div>
+        <div><h3>כותבים משפט — מקבלים משימה</h3>
+          <p>מקלידים או מכתיבים בקול כמו שמדברים. האפליקציה מבינה תאריך, שעה ומשך, ומכינה את המשימה. אם השעה נופלת בשבת או בחג — היא מזהירה.</p>
+          <span class="example">״<b>מחר ב-5</b> להתקשר לאבא״ ← יום שבת · 17:00 · ⚠️ שבת</span></div>
+        <div class="phone shot"><img src="img/type-done.jpg" alt="משימה חדשה שנוצרה ממשפט"></div>
+      </div>
+      <div class="slot">
+        <div class="time">10:00<small>סדר עדיפויות</small></div>
+        <div><h3>דחוף? חשוב? זה כבר מסודר</h3>
+          <p>כל משימה מקבלת מקום במטריצה של דחוף וחשוב, בצבע. דדליינים מקבלים ספירה לאחור ואחוז התקדמות, ומשימות גדולות מתפרקות לשלבים.</p>
+          <ul><li>משימות, דדליינים, משבצות זמן ותזכורות</li><li>שלבים בתוך משימה, ו"מתישהו" לרעיונות בלי תאריך</li><li>קטגוריות, חזרה (יומי, שבועי, חודשי, שנתי) וחיפוש</li></ul></div>
+        <div class="phone shot"><img src="img/luz-list.jpg" alt="רשימת משימות לפי דחיפות ודדליינים"></div>
+      </div>
+      <div class="slot">
+        <div class="time">12:50<small>תזכורת</small></div>
+        <div><h3>תזכורות, ושעון מעורר אמיתי</h3>
+          <p>לכל משימה כמה תזכורות שרוצים: התראה רגילה, או שעון מעורר שמצלצל במסך מלא גם כשהטלפון נעול, עם נודניק. תזכורת חשובה מצלצלת גם במצב שקט.</p>
+          <ul><li>"10 דק׳ לפני", "יום לפני", או תאריך ושעה מדויקים</li><li>תזכורת לפי מקום — כשמגיעים או יוצאים</li><li>אפשר לשים את השעון גם באפליקציית השעון של הטלפון</li></ul></div>
+        <div class="phone shot"><img src="img/luz-form2.jpg" alt="הגדרת תזכורת עם שעון מעורר"></div>
+      </div>
+      <div class="slot">
+        <div class="time">15:00<small>יומן</small></div>
+        <div><h3>מחובר ליומן של הטלפון</h3>
+          <p>סנכרון דו-כיווני עם יומן הטלפון — Google Calendar, Samsung ואחרים. האירועים מופיעים בלו״ז, משימות עם שעה נכנסות ליומן, וכשמזיזים אירוע ביומן, המשימה זזה איתו.</p>
+          <ul><li>תצוגות יום, שבוע, חודש ורשימה</li><li>בוחרים אילו יומנים להציג</li><li>כפתור "בדוק סנכרון" שמראה שהכל עובד</li></ul></div>
+        <div class="phone shot"><img src="img/luz-cal-week.jpg" alt="תצוגת שבוע ביומן"></div>
+      </div>
+      <div class="slot">
+        <div class="time">15:30<small>אנשי קשר</small></div>
+        <div><h3>וואטסאפ וחיוג בלחיצה</h3>
+          <p>מצרפים איש קשר למשימה, וממנה פותחים וואטסאפ, שיחה או שיחת וואטסאפ. יש גם הודעות מוכנות כמו "אני בדרך" ו"אחזור אליך בהקדם".</p>
+          <ul><li>קבוצות: משפחה, עבודה, חברים</li><li>כל המשימות של אדם מסוים במקום אחד</li><li>משתפים משימה עם מישהו אחר שמשתמש באפליקציה</li></ul></div>
+        <div class="phone shot"><img src="img/luz-contact.jpg" alt="כרטיס איש קשר עם וואטסאפ"></div>
+      </div>
+      <div class="slot">
+        <div class="time">16:30<small>ערב שבת</small></div>
+        <div><h3>יודע מתי נכנסת שבת</h3>
+          <p>תאריך עברי בכל יום, חגים, פרשת השבוע, הדלקת נרות והבדלה לפי המיקום שלך — ואזהרה לפני שמשבצים משהו בשבת או בחג.</p>
+          <span class="example">יום שישי, ה׳ חשון · <b>הדלקת נרות 17:46</b></span></div>
+        <div class="phone shot"><img src="img/luz-cal-day.jpg" alt="יומן חודשי עם זמני שבת"></div>
+      </div>
+    </div>
+
+    <div class="more">
+      <div><b>נעילה</b><span>קוד או טביעת אצבע בכניסה לאפליקציה.</span></div>
+      <div><b>סנכרון בין מכשירים</b><span>טלפון, מחשב (shiloluz.web.app) ושילולוז דיילי — רק אם מתחברים.</span></div>
+      <div><b>סטטיסטיקה</b><span>כמה בוצע השבוע, רצף ימים, ופילוח לפי דחיפות וקטגוריה.</span></div>
+      <div><b>קבצים וקישורים</b><span>מצרפים מסמכים, תמונות וקישורי זום למשימה.</span></div>
+      <div><b>גיבוי</b><span>שומרים גיבוי לקובץ ומשחזרים בטלפון אחר.</span></div>
+      <div><b>מצב כהה</b><span>בהיר, כהה או לפי הטלפון.</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="daily" id="daily">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="brandrow"><img src="img/daily-icon.png" alt=""><span>שילולוז דיילי</span></div>
+      <h2>ובשביל היום עצמו — שילולוז דיילי</h2>
+      <p>אפליקציה אחות לתכנון היום: לא עוד רשימת משימות, אלא יום מחולק לבלוקים, עם משפט לבוקר, הרגלים, וסיכום ערב שקט. אותו חשבון, אותן משימות, אותו יומן.</p>
+    </div>
+    <div class="daily-grid">
+      <div class="dcard"><div class="phone"><img src="img/daily-plan.jpg" alt="תכנון יום בבלוקים"></div>
+        <h3>היום מתוכנן בבלוקים</h3><p>תבניות לימים שונים — יום עבודה, שישי, שבת, חופש — שמזוהות לבד לפי הלוח העברי, עם זמני היום ההלכתיים לפי המיקום.</p></div>
+      <div class="dcard"><div class="phone"><img src="img/daily-today.jpg" alt="משפט יומי ואנרגיית בוקר"></div>
+        <h3>משפט ואתגר לכל יום</h3><p>משפט מהמקורות, ציטוט או משפט קצר, ואתגר קטן ליום. בבוקר בוחרים את רמת האנרגיה, והלו״ז מתאים את עצמו.</p></div>
+      <div class="dcard"><div class="phone"><img src="img/daily-evening.jpg" alt="סיכום ערב"></div>
+        <h3>סיכום ערב שקט</h3><p>שלוש שאלות קצרות: מה הצליח, על מה אני מודה, ומה הדבר הראשון מחר. וסטטיסטיקה שבועית שמראה את הדרך.</p></div>
+    </div>
+    <div class="daily-list"><span>מעקב הרגלים</span><span>זמני היום</span><span>תבניות יום</span><span>ספירת ביצוע יומית</span><span>משפטים מועדפים ומשפטים שלך</span><span>תזכורת לסיכום הערב</span></div>
+  </div>
+</section>
+
+<section class="watch">
+  <div class="wrap">
+    <div class="sec-head" style="margin:0">
+      <div class="eyebrow">42 שניות</div>
+      <h2>רוצה לראות את זה זז?</h2>
+      <p>יום שלם עם שתי האפליקציות, מהבוקר עד הלילה, בסרטון קצר.</p>
+    </div>
+    <video src="img/promo.mp4" poster="img/poster.jpg" controls playsinline preload="metadata" aria-label="סרטון היכרות עם שילולו״ז ושילולוז דיילי"></video>
+  </div>
+</section>
+
+<section>
+  <div class="wrap two">
+    <div class="priv">
+      <h3>הפרטיות שלך</h3>
+      <ul>
+        <li>בלי פרסומות ובלי מעקב.</li>
+        <li>בלי חשבון — כל המידע נשאר רק בטלפון שלך.</li>
+        <li>סנכרון בענן הוא בחירה שלך, וכל אחד רואה רק את המידע שלו.</li>
+        <li>הקבצים המצורפים נשמרים רק בטלפון.</li>
+      </ul>
+    </div>
+    <div class="faq">
+      <h3>שאלות</h3>
+      <details><summary>כמה זה עולה?</summary><p>שום דבר. שתי האפליקציות חינמיות לגמרי ובלי פרסומות.</p></details>
+      <details><summary>יש לאייפון?</summary><p>לא. כרגע האפליקציות זמינות לאנדרואיד בלבד.</p></details>
+      <details><summary>איך מקבלים את האפליקציה?</summary><p>שולחים לי הודעת וואטסאפ בכפתור כאן, ואני שולח קישור להתקנה עם הסבר קצר.</p></details>
+      <details><summary>חייבים לפתוח חשבון?</summary><p>לא. אפשר להשתמש בלי חשבון בכלל. חשבון צריך רק כדי לסנכרן בין הטלפון, המחשב ושילולוז דיילי.</p></details>
+      <details><summary>צריך את שתי האפליקציות?</summary><p>לא חייבים. שילולו״ז היא לניהול המשימות והלו״ז, דיילי היא לתכנון היום. ביחד הן משלימות זו את זו.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="ask" id="ask">
+  <div class="wrap">
+    <h2>פחות לזכור. <em>יותר לחיות.</em></h2>
+    <p>לחיצה אחת פותחת וואטסאפ עם הודעה מוכנה. שולחים, ואני חוזר אליך עם קישור להתקנה.</p>
+    <div class="cta-row" style="margin-top:30px">
+      <a class="btn-wa" data-wa href="#ask"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg>אני מעוניין באפליקציה</a>
+    </div>
+    <div class="steps">
+      <div><b>שולחים וואטסאפ</b>ההודעה כבר כתובה, רק ללחוץ שליחה.</div>
+      <div><b>מקבלים קישור</b>עם הסבר קצר איך להתקין.</div>
+      <div><b>מתחילים</b>בלי הרשמה ובלי תשלום.</div>
+    </div>
+    <div class="num">אם הכפתור לא נפתח, אפשר לשלוח ידנית למספר: <code id="phone-text"></code><button class="copy" id="copy" type="button">העתקה</button></div>
+  </div>
+</section>
+<footer><div class="wrap">שילולו״ז ושילולוז דיילי · לאנדרואיד · חינם ובלי פרסומות</div></footer>
+
+<script>
+// The WhatsApp number (international format, no +) and the message that opens ready to send.
+const PHONE = '972526387388';
+const MESSAGE = 'היי! אני מעוניין באפליקציה שילולו״ז 🙂';
+const href = 'https://wa.me/' + PHONE + '?text=' + encodeURIComponent(MESSAGE);
+const ready = /^\d{11,13}$/.test(PHONE);
+if (ready) document.querySelectorAll('[data-wa]').forEach(a => { a.href = href; a.target = '_blank'; a.rel = 'noopener'; });
+const pretty = PHONE.startsWith('972') ? '0' + PHONE.slice(3).replace(/^(\d{2})(\d{3})(\d+)$/, '$1-$2-$3') : PHONE;
+document.getElementById('phone-text').textContent = ready ? pretty : '—';
+document.getElementById('copy').addEventListener('click', e => {
+  const b = e.currentTarget;
+  const done = () => { b.textContent = 'הועתק'; setTimeout(() => { b.textContent = 'העתקה'; }, 1800); };
+  try { navigator.clipboard.writeText(pretty).then(done, () => { getSelection().selectAllChildren(document.getElementById('phone-text')); }); }
+  catch { getSelection().selectAllChildren(document.getElementById('phone-text')); }
+});
+</script>
+
+</body>
+</html>
