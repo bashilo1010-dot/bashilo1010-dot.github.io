@@ -1,0 +1,1004 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1F5BD8">
+<title>דבב</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="דבב">
+<!-- דבב: interview sheets for soldiers. One file, works offline; everything is stored only on this device
+     (localStorage, optionally encrypted with a code). The Android app (android/) wraps this same page and adds
+     saving/sharing files, printing to PDF and voice typing through window.DababAndroid. -->
+<style>
+:root {
+  --bg: #F4F6FB; --card: #FFFFFF; --line: #E2E7F0; --text: #14213D; --soft: #5B6680; --faint: #8C96AB;
+  --acc: #1F5BD8; --acc2: #E8EFFD; --ok: #12A150; --okbg: #E5F6EC; --warn: #D9480F; --warnbg: #FDEDE6; --yel: #B7791F; --yelbg: #FEF5E0;
+  --shadow: 0 1px 2px rgba(20,33,61,.06), 0 4px 16px rgba(20,33,61,.06); --r: 16px; --fs: 16px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme=light]) {
+  --bg: #0E1320; --card: #171E2E; --line: #273149; --text: #EEF2FA; --soft: #A9B3C8; --faint: #76819A;
+  --acc: #5C8BFF; --acc2: #1C2A4A; --ok: #3DD68C; --okbg: #13301F; --warn: #FF7A4D; --warnbg: #3A1F14; --yel: #F2B544; --yelbg: #3A2D12;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25); } }
+:root[data-theme=dark] {
+  --bg: #0E1320; --card: #171E2E; --line: #273149; --text: #EEF2FA; --soft: #A9B3C8; --faint: #76819A;
+  --acc: #5C8BFF; --acc2: #1C2A4A; --ok: #3DD68C; --okbg: #13301F; --warn: #FF7A4D; --warnbg: #3A1F14; --yel: #F2B544; --yelbg: #3A2D12;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25); }
+:root.big { --fs: 19px; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; background: var(--bg); color: var(--text); font: var(--fs)/1.5 system-ui, -apple-system, "Segoe UI", Rubik, Arial, sans-serif; }
+body { min-height: 100vh; padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; border: 0; background: none; }
+header.top { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 8px; padding: calc(10px + env(safe-area-inset-top)) 12px 10px;
+  background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+header.top h1 { flex: 1; margin: 0; font-size: 1.25em; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.icon-btn { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; color: var(--soft); flex: none; }
+.icon-btn:active, .icon-btn:hover { background: var(--acc2); color: var(--acc); }
+.icon-btn svg, .btn svg { width: 22px; height: 22px; }
+main { max-width: 760px; margin: 0 auto; padding: 14px 14px 0; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); padding: 14px; margin-bottom: 12px; }
+.muted { color: var(--soft); font-size: .9em; }
+.faint { color: var(--faint); font-size: .85em; }
+.row { display: flex; align-items: center; gap: 10px; }
+.grow { flex: 1; min-width: 0; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 11px 16px; border-radius: 12px; font-weight: 700;
+  background: var(--acc2); color: var(--acc); min-height: 46px; }
+.btn.primary { background: var(--acc); color: #fff; }
+.btn.ghost { background: transparent; border: 1px solid var(--line); color: var(--text); }
+.btn.danger { background: var(--warnbg); color: var(--warn); }
+.btn.block { width: 100%; }
+.btn:disabled { opacity: .45; }
+.fab { position: fixed; left: 16px; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 6; border-radius: 18px; padding: 14px 20px;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--acc) 40%, transparent); }
+input[type=text], input[type=tel], input[type=number], input[type=date], input[type=search], input[type=password], textarea, select {
+  width: 100%; background: var(--bg); border: 1.5px solid var(--line); border-radius: 12px; padding: 12px; outline: none; min-height: 48px; }
+input:focus, textarea:focus, select:focus { border-color: var(--acc); background: var(--card); }
+textarea { resize: vertical; min-height: 70px; }
+label.lbl { display: block; font-weight: 700; margin: 10px 2px 6px; font-size: .92em; }
+.list-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 14px; background: var(--card); border: 1px solid var(--line);
+  margin-bottom: 8px; box-shadow: var(--shadow); width: 100%; text-align: start; }
+.list-item:active { transform: scale(.99); }
+.avatar { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; color: #fff; flex: none; font-size: 1.05em; }
+.badges { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.badge { font-size: .74em; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--warnbg); color: var(--warn); }
+.badge.y { background: var(--yelbg); color: var(--yel); }
+.badge.ok { background: var(--okbg); color: var(--ok); }
+.badge.b { background: var(--acc2); color: var(--acc); }
+.ring { --p: 0; width: 42px; height: 42px; border-radius: 50%; flex: none; display: grid; place-items: center; font-size: .72em; font-weight: 800;
+  background: conic-gradient(var(--ok) calc(var(--p) * 1%), var(--line) 0); }
+.ring span { width: 32px; height: 32px; border-radius: 50%; background: var(--card); display: grid; place-items: center; }
+.tabs { display: flex; gap: 6px; background: var(--card); border: 1px solid var(--line); padding: 5px; border-radius: 14px; margin-bottom: 12px; }
+.tabs button { flex: 1; padding: 9px; border-radius: 10px; font-weight: 700; color: var(--soft); }
+.tabs button.on { background: var(--acc); color: #fff; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { padding: 10px 16px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--card); font-weight: 600; min-height: 44px; }
+.chip.on { border-color: var(--acc); background: var(--acc); color: #fff; }
+.qnum { display: inline-grid; place-items: center; min-width: 28px; height: 28px; padding: 0 6px; border-radius: 9px; background: var(--acc2); color: var(--acc); font-weight: 800; font-size: .85em; }
+.qtitle { font-size: 1.05em; font-weight: 800; }
+.wiz .qtitle { font-size: 1.45em; line-height: 1.3; margin: 10px 0 16px; }
+.progress { height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.progress i { display: block; height: 100%; background: var(--acc); transition: width .25s; }
+.wiz-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 6; display: flex; gap: 8px; padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+  background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(12px); border-top: 1px solid var(--line); }
+.wiz-nav .btn { flex: 1; }
+.sub { display: grid; gap: 8px; }
+.inline-actions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.calc { display: inline-block; margin-top: 6px; font-weight: 700; color: var(--acc); font-size: .9em; }
+.note { margin-top: 10px; }
+.with-mic { position: relative; }
+.with-mic .mic { position: absolute; left: 6px; top: 6px; width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; color: var(--soft); }
+.with-mic .mic.on { color: #fff; background: var(--warn); }
+.with-mic input, .with-mic textarea { padding-left: 50px; }
+.skipped { border-style: dashed !important; opacity: .85; }
+.empty { text-align: center; padding: 40px 16px; color: var(--soft); }
+.empty svg { width: 64px; height: 64px; color: var(--faint); }
+.banner { display: flex; gap: 10px; align-items: center; background: var(--yelbg); color: var(--yel); border-radius: 14px; padding: 12px 14px; margin-bottom: 12px; font-weight: 600; }
+.sheet-bg { position: fixed; inset: 0; background: rgba(10,15,30,.45); z-index: 20; display: flex; align-items: flex-end; justify-content: center; }
+.sheet { background: var(--card); width: 100%; max-width: 640px; max-height: 90vh; overflow: auto; border-radius: 22px 22px 0 0; padding: 18px 16px calc(18px + env(safe-area-inset-bottom)); }
+.sheet h2 { margin: 0 0 12px; font-size: 1.2em; }
+@media (min-width: 700px) { .sheet-bg { align-items: center; } .sheet { border-radius: 22px; } }
+.menu-item { display: flex; align-items: center; gap: 12px; width: 100%; padding: 13px 10px; border-radius: 12px; text-align: start; font-weight: 600; }
+.menu-item:active, .menu-item:hover { background: var(--acc2); }
+.menu-item svg { width: 22px; height: 22px; color: var(--soft); }
+.toast { position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom)); transform: translate(-50%, 16px); opacity: 0; z-index: 40;
+  background: var(--text); color: var(--bg); padding: 11px 18px; border-radius: 999px; font-weight: 700; transition: .25s; pointer-events: none; max-width: 90vw; text-align: center; }
+.toast.on { opacity: 1; transform: translate(-50%, 0); }
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.stat { background: var(--bg); border-radius: 12px; padding: 10px 12px; }
+.stat b { display: block; font-size: 1.4em; }
+.bar { display: flex; align-items: center; gap: 8px; margin: 4px 0; font-size: .9em; }
+.bar .track { flex: 1; height: 10px; border-radius: 5px; background: var(--line); overflow: hidden; }
+.bar .track i { display: block; height: 100%; background: var(--acc); }
+.check-row { display: flex; align-items: center; gap: 10px; padding: 8px 4px; }
+.check-row input { width: 22px; height: 22px; accent-color: var(--acc); flex: none; }
+.lock { position: fixed; inset: 0; z-index: 50; background: var(--bg); display: grid; place-items: center; padding: 24px; }
+.pin-dots { display: flex; gap: 14px; justify-content: center; margin: 18px 0; }
+.pin-dots i { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--acc); }
+.pin-dots i.on { background: var(--acc); }
+.keypad { display: grid; grid-template-columns: repeat(3, 76px); gap: 12px; justify-content: center; direction: ltr; }
+.keypad button { height: 64px; border-radius: 18px; background: var(--card); border: 1px solid var(--line); font-size: 1.5em; font-weight: 700; }
+.drag-row { display: flex; align-items: center; gap: 8px; padding: 10px; border: 1px solid var(--line); border-radius: 12px; margin-bottom: 6px; background: var(--card); }
+.ltr { direction: ltr; unicode-bidi: isolate; }
+#printArea { display: none; }
+@media print { body > *:not(#printArea) { display: none !important; } #printArea { display: block !important; } body { background: #fff; padding: 0; } }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="toast" id="toast"></div>
+<datalist id="cities"></datalist>
+
+<script>
+'use strict';
+// ====================================================================== icons
+const I = {
+  back: '<path d="M9 18l6-6-6-6"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',
+  dots: '<circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>',
+  share: '<path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M16 6l-4-4-4 4M12 2v14"/>',
+  phone: '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/>',
+  wa: '<path d="M3 21l1.6-4.8A8.5 8.5 0 1 1 8 19.6L3 21z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-1 1c-1-.5-1.5-1-2-2l1-1-1-2-1.5 1z"/>',
+  mic: '<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5"/>',
+  users: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+  trash: '<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>',
+  edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  up: '<path d="M18 15l-6-6-6 6"/>', down: '<path d="M6 9l6 6 6-6"/>',
+  file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>',
+  lock: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  save: '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/>',
+  upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>',
+  list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+  alert: '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
+  cake: '<path d="M20 21v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8M4 16s.5-1 2-1 2.5 2 4 2 2.5-2 4-2 2.5 2 4 2 2-1 2-1M2 21h20M7 8v3M12 8v3M17 8v3M7 4h.01M12 4h.01M17 4h.01"/>',
+  chart: '<path d="M3 3v18h18"/><path d="M7 16v-4M12 16V8M17 16v-7"/>',
+  copy: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>', x: '<path d="M18 6 6 18M6 6l12 12"/>',
+  skip: '<path d="M5 4l10 8-10 8V4zM19 5v14"/>',
+};
+const svg = (n, extra = '') => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ${extra}>${I[n]}</svg>`;
+
+// ====================================================================== the default questions
+const BANKS = ['לאומי', 'הפועלים', 'דיסקונט', 'מזרחי טפחות', 'הבינלאומי', 'מרכנתיל', 'יהב', 'ירושלים', 'אוצר החייל', 'מסד', 'פאגי', 'בנק הדואר', 'וואן זירו'];
+const RELATIONS = ['אבא', 'אמא', 'אח', 'אחות', 'בן/בת זוג', 'סבא/סבתא', 'דוד/דודה', 'חבר/ה'];
+const YESNO = ['כן', 'לא'];
+function defaultTemplate() {
+  let n = 0;
+  const q = (title, type, more = {}) => ({ id: 'q' + (++n), title, type, ...more });
+  return [
+    q('ת"ז', 'number', { sensitive: true, key: 'id' }),
+    q('מספר אישי', 'number', { sensitive: true, key: 'pn' }),
+    q('טלפון', 'phone', { sensitive: true, key: 'phone' }),
+    q('תאריך לידה', 'date', { calc: 'age', key: 'birth' }),
+    q('עיר', 'city'),
+    q('כתובת', 'text', { sensitive: true }),
+    q('סטטוס', 'choice', { options: ['רווק/ה', 'בזוגיות', 'נשוי/אה', 'גרוש/ה', 'אלמן/ה'] }),
+    q('איש קשר למקרה אסון', 'group', { sensitive: true, fields: [{ id: 'name', label: 'שם', type: 'text' }, { id: 'rel', label: 'קרבה', type: 'choice', options: RELATIONS }, { id: 'phone', label: 'טלפון', type: 'phone' }] }),
+    q('בנק', 'group', { sensitive: true, fields: [{ id: 'bank', label: 'בנק', type: 'choice', options: BANKS }, { id: 'branch', label: 'סניף', type: 'number' }, { id: 'acc', label: 'מספר חשבון', type: 'number' }] }),
+    q('תפקיד', 'text', { key: 'role' }),
+    q('תאריך גיוס', 'date', { calc: 'service' }),
+    q('כשירות', 'text'),
+    q('כשרות', 'choice', { options: ['לא שומר/ת', 'כשר', 'מהדרין'] }),
+    q('טלפון כשר?', 'choice', { options: YESNO }),
+    q('תזונה', 'choice', { options: ['רגילה', 'צמחונית', 'טבעונית', 'ללא גלוטן'] }),
+    q('אלרגיה?', 'choice', { options: YESNO, alert: 'אלרגיה' }),
+    q('אפיפן?', 'choice', { options: YESNO, alert: 'אפיפן' }),
+    q('מצב רפואי / פטורים', 'text', { alert: 'רפואי' }),
+    q('נוטל תרופות באופן קבוע?', 'choice', { options: YESNO, alert: 'תרופות' }),
+    q('יצא לך להיפגש / רוצה להיפגש עם פסיכולוג / קב"ן?', 'choice', { options: ['לא', 'נפגש/ה בעבר', 'רוצה להיפגש'], alert: 'קב"ן', alertOn: ['רוצה להיפגש'] }),
+    q('פרופיל וסעיפים', 'text'),
+    q('זכאות והקלות בת"ש? יצא לך לראות משקית ת"ש?', 'text'),
+    q('חופשות ובקשצ"ים', 'text'),
+    q('חריג ממ (דברים שממ צריך לדעת)', 'text', { alert: 'חריג ממ' }),
+    q('הערות: עוד דברים שהחייל רוצה להוסיף ולשתף על מצבו', 'text', { long: true }),
+    q('הקלות בלימודים?', 'choice', { options: YESNO }),
+  ];
+}
+
+const CITIES = 'אבו גוש,אבן יהודה,אום אל-פחם,אופקים,אור יהודה,אור עקיבא,אורנית,אילת,אלעד,אלפי מנשה,אפרת,אריאל,אשדוד,אשקלון,באקה אל-גרבייה,באר יעקב,באר שבע,בית אל,בית דגן,בית שאן,בית שמש,בני ברק,בני עי"ש,בנימינה-גבעת עדה,בסמ"ה,בת ים,גבעת זאב,גבעת שמואל,גבעתיים,גדרה,גן יבנה,גני תקווה,דאלית אל-כרמל,דימונה,הוד השרון,הרצליה,זכרון יעקב,חדרה,חולון,חיפה,חצור הגלילית,חריש,טבריה,טייבה,טירה,טירת כרמל,טמרה,יבנאל,יבנה,יהוד-מונוסון,יקנעם עילית,ירוחם,ירושלים,כוכב יאיר,כפר ורדים,כפר יונה,כפר כנא,כפר סבא,כפר קאסם,כרמיאל,להבים,לוד,מבשרת ציון,מגדל העמק,מודיעין עילית,מודיעין-מכבים-רעות,מזכרת בתיה,מטולה,מיתר,מעלה אדומים,מעלות-תרשיחא,מצפה רמון,נהריה,נוף הגליל,נס ציונה,נצרת,נשר,נתיבות,נתניה,סח\'נין,עכו,עפולה,עראבה,ערד,עתלית,פרדס חנה-כרכור,פרדסיה,פתח תקווה,צפת,קדימה-צורן,קלנסווה,קצרין,קרית אונו,קרית ארבע,קרית אתא,קרית ביאליק,קרית גת,קרית טבעון,קרית ים,קרית יערים,קרית מוצקין,קרית מלאכי,קרית עקרון,קרית שמונה,קרני שומרון,ראש העין,ראש פינה,ראשון לציון,רהט,רחובות,רכסים,רמלה,רמת גן,רמת השרון,רמת ישי,רעננה,שדרות,שוהם,שלומי,שפרעם,תל אביב-יפו,תל מונד'.split(',');
+document.getElementById('cities').innerHTML = CITIES.map(c => `<option value="${c}">`).join('');
+
+// ====================================================================== storage (optionally encrypted with a code)
+const KEY = 'dabab.v1', ENC = 'dabab.enc.v1', META = 'dabab.meta';
+let S = null;          // the whole state
+let pinKey = null;     // AES key while unlocked
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+function blank() { return { template: defaultTemplate(), soldiers: {}, lists: [], settings: { interviewer: '', big: false, mode: 'wizard', lastBackup: 0, theme: 'auto' } }; }
+function meta() { try { return JSON.parse(localStorage.getItem(META) || '{}'); } catch (e) { return {}; } }
+function setMeta(m) { try { localStorage.setItem(META, JSON.stringify(m)); } catch (e) {} }
+const b64 = buf => btoa(String.fromCharCode(...new Uint8Array(buf)));
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function deriveKey(pin, salt) {
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pin), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: 150000, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+}
+let saveTimer = null;
+function save(now) {
+  clearTimeout(saveTimer);
+  const go = async () => {
+    try {
+      const json = JSON.stringify(S);
+      if (pinKey) {
+        const iv = crypto.getRandomValues(new Uint8Array(12));
+        const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, pinKey, new TextEncoder().encode(json));
+        localStorage.setItem(ENC, b64(iv) + '.' + b64(ct));
+        localStorage.removeItem(KEY);
+      } else {
+        localStorage.setItem(KEY, json);
+        localStorage.removeItem(ENC);
+      }
+    } catch (e) { toast('שגיאה בשמירה: ' + e.message); }
+  };
+  if (now) return go();
+  saveTimer = setTimeout(go, 350);
+}
+async function unlock(pin) {
+  const m = meta();
+  const key = await deriveKey(pin, unb64(m.salt));
+  const [iv, ct] = localStorage.getItem(ENC).split('.');
+  const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(iv) }, key, unb64(ct));   // throws on a wrong code
+  pinKey = key;
+  S = JSON.parse(new TextDecoder().decode(pt));
+}
+function loadPlain() {
+  try { S = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { S = null; }
+  if (!S) S = blank();
+  S.settings = Object.assign(blank().settings, S.settings || {});
+}
+async function setPin(pin) {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  pinKey = await deriveKey(pin, salt);
+  setMeta({ ...meta(), salt: b64(salt), locked: true });
+  await save(true);
+}
+async function removePin() { pinKey = null; setMeta({ ...meta(), locked: false, salt: null }); await save(true); }
+
+// ====================================================================== helpers
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+function toast(t) { const e = $('#toast'); e.textContent = t; e.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => e.classList.remove('on'), 2300); }
+const fullName = s => `${s.first || ''} ${s.last || ''}`.trim() || 'ללא שם';
+const COLORS = ['#1F5BD8', '#12A150', '#D9480F', '#7048E8', '#0C8599', '#C2255C', '#E67700', '#2F9E44'];
+const colorFor = s => COLORS[[...(s.id || 'x')].reduce((a, c) => a + c.charCodeAt(0), 0) % COLORS.length];
+const initials = s => ((s.first || '?')[0] + (s.last || '')[0] || '').trim();
+const ans = (s, q) => (s.answers && s.answers[q.id]) || {};
+function setAns(s, q, patch) { s.answers = s.answers || {}; s.answers[q.id] = Object.assign({}, s.answers[q.id], patch); s.updated = Date.now(); save(); }
+function filled(s, q) {
+  const a = ans(s, q);
+  if (q.type === 'group') return q.fields.some(f => (a.sub || {})[f.id]);
+  return !!(a.value || a.other);
+}
+function answerText(s, q, withNote = true) {
+  const a = ans(s, q);
+  let t = '';
+  if (q.type === 'group') t = q.fields.map(f => (a.sub || {})[f.id] ? `${f.label}: ${(a.sub || {})[f.id]}` : '').filter(Boolean).join(', ');
+  else {
+    t = a.value || '';
+    if (a.other) t = t ? `${t} (${a.other})` : a.other;
+    if (q.type === 'date' && a.value) t = fmtDate(a.value) + calcText(q, a.value, true);
+  }
+  if (withNote && a.note) t += (t ? ' · ' : '') + 'הערה: ' + a.note;
+  return t;
+}
+const pct = s => { const t = S.template; return t.length ? Math.round(t.filter(q => filled(s, q)).length / t.length * 100) : 0; };
+function alerts(s) {
+  return S.template.filter(q => q.alert && filled(s, q) && (() => {
+    const a = ans(s, q);
+    if (q.alertOn) return q.alertOn.includes(a.value);
+    if (q.type === 'choice' && q.options && q.options.includes('כן')) return a.value === 'כן' || (!!a.other && a.value !== 'לא');
+    return true;
+  })()).map(q => q.alert);
+}
+const byKey = k => S.template.find(q => q.key === k);
+const roleOf = s => { const q = byKey('role'); return q ? ans(s, q).value || '' : ''; };
+const phoneOf = s => { const q = byKey('phone'); return q ? ans(s, q).value || '' : ''; };
+function fmtDate(d) { if (!d) return ''; const [y, m, dd] = d.split('-'); return `${+dd}.${+m}.${y}`; }
+function age(d) { const b = new Date(d), n = new Date(); let a = n.getFullYear() - b.getFullYear(); if (n < new Date(n.getFullYear(), b.getMonth(), b.getDate())) a--; return a; }
+function since(d) {
+  const b = new Date(d), n = new Date(); let m = (n.getFullYear() - b.getFullYear()) * 12 + n.getMonth() - b.getMonth(); if (n.getDate() < b.getDate()) m--;
+  if (m < 0) return 'עוד לא התגייס/ה';
+  const y = Math.floor(m / 12), r = m % 12;
+  return [y ? (y === 1 ? 'שנה' : y === 2 ? 'שנתיים' : y + ' שנים') : '', r ? (r === 1 ? 'חודש' : r === 2 ? 'חודשיים' : r + ' חודשים') : ''].filter(Boolean).join(' ו') || 'פחות מחודש';
+}
+function calcText(q, v, short) {
+  if (!v) return '';
+  if (q.calc === 'age') return short ? ` (גיל ${age(v)})` : `גיל ${age(v)}`;
+  if (q.calc === 'service') return short ? ` (${since(v)} בשירות)` : `${since(v)} בשירות`;
+  return '';
+}
+const intl = p => { const d = (p || '').replace(/\D/g, ''); return d.startsWith('0') ? '972' + d.slice(1) : d; };
+function telLinks(p) {
+  if (!p || p.replace(/\D/g, '').length < 7) return '';
+  return `<div class="inline-actions"><a class="btn ghost" href="tel:${esc(p.replace(/[^\d+]/g, ''))}">${svg('phone')} חיוג</a><a class="btn ghost" href="https://wa.me/${intl(p)}" target="_blank">${svg('wa')} וואטסאפ</a></div>`;
+}
+function sheet(html, onMount) {
+  const bg = document.createElement('div'); bg.className = 'sheet-bg';
+  bg.innerHTML = `<div class="sheet" role="dialog">${html}</div>`;
+  bg.addEventListener('click', e => { if (e.target === bg) close(); });
+  document.body.append(bg);
+  const close = () => { bg.remove(); sheets.pop(); };
+  sheets.push(close);
+  onMount && onMount(bg.firstElementChild, close);
+  return close;
+}
+const sheets = [];
+function confirmBox(text, yes, danger = true) {
+  return new Promise(res => sheet(`<h2>${esc(text)}</h2><div class="row" style="margin-top:14px"><button class="btn ${danger ? 'danger' : 'primary'} grow" data-y>${esc(yes)}</button><button class="btn ghost grow" data-n>ביטול</button></div>`,
+    (el, close) => { $('[data-y]', el).onclick = () => { close(); res(true); }; $('[data-n]', el).onclick = () => { close(); res(false); }; }));
+}
+function promptBox(title, value = '', placeholder = '') {
+  return new Promise(res => sheet(`<h2>${esc(title)}</h2><input type="text" value="${esc(value)}" placeholder="${esc(placeholder)}" data-i><div class="row" style="margin-top:14px"><button class="btn primary grow" data-y>שמירה</button><button class="btn ghost grow" data-n>ביטול</button></div>`,
+    (el, close) => { const i = $('[data-i]', el); setTimeout(() => i.focus(), 50); const ok = () => { close(); res(i.value.trim()); };
+      i.onkeydown = e => { if (e.key === 'Enter') ok(); }; $('[data-y]', el).onclick = ok; $('[data-n]', el).onclick = () => { close(); res(null); }; }));
+}
+const A = window.DababAndroid;   // present inside the Android app
+const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+// the browser version: work offline, and ask the browser to keep the data
+if (!A && location.protocol === 'https:' && 'serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+
+// ====================================================================== voice typing
+const voiceCbs = {};
+window.__dababVoice = (id, text) => { const cb = voiceCbs[id]; delete voiceCbs[id]; if (cb) cb(text); };
+const canVoice = () => !!(A && A.listen) || !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+function listen(btn, input) {
+  const put = t => { if (!t) return; input.value = (input.value ? input.value + ' ' : '') + t; input.dispatchEvent(new Event('input', { bubbles: true })); };
+  if (A && A.listen) { const id = uid(); voiceCbs[id] = put; A.listen(id); return; }
+  const R = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const r = new R(); r.lang = 'he-IL'; r.interimResults = false;
+  btn.classList.add('on');
+  r.onresult = e => put(e.results[0][0].transcript);
+  r.onend = () => btn.classList.remove('on');
+  r.onerror = () => { btn.classList.remove('on'); toast('ההקלדה הקולית לא זמינה כאן'); };
+  r.start();
+}
+function micWrap(inner) { return canVoice() ? `<div class="with-mic">${inner}<button class="mic" type="button" aria-label="הקלדה קולית">${svg('mic')}</button></div>` : inner; }
+document.addEventListener('click', e => { const m = e.target.closest('.mic'); if (m) listen(m, m.parentElement.querySelector('input,textarea')); });
+
+// ====================================================================== router
+let route = { name: 'home' };
+const history_ = [];
+function go(r, push = true) { if (push) history_.push(route); route = r; render(); window.scrollTo(0, 0); }
+function back() {
+  if (sheets.length) { sheets[sheets.length - 1](); return true; }
+  if (!history_.length) return false;
+  route = history_.pop(); render(); return true;
+}
+window.__dababBack = back;   // the Android back button
+function render() {
+  document.documentElement.classList.toggle('big', !!S.settings.big);
+  document.documentElement.dataset.theme = S.settings.theme === 'auto' ? '' : S.settings.theme;
+  const v = { home: vHome, list: vList, soldier: vSoldier, settings: vSettings, template: vTemplate, search: vSearch }[route.name] || vHome;
+  $('#app').innerHTML = '';
+  v($('#app'));
+}
+
+// ====================================================================== home: the lists
+function vHome(root) {
+  const lists = S.lists;
+  const firstData = Math.min(...Object.values(S.soldiers).map(s => s.created || Date.now()), Date.now());
+  const needBackup = Object.keys(S.soldiers).length && Date.now() - (S.settings.lastBackup || firstData) > 7 * 864e5;   // a week since the last backup (or since the first soldier)
+  root.innerHTML = `
+  <header class="top"><h1>דבב</h1>
+    <button class="icon-btn" data-search aria-label="חיפוש">${svg('search')}</button>
+    <button class="icon-btn" data-settings aria-label="הגדרות">${svg('gear')}</button></header>
+  <main>
+    ${isIOS && !standalone && !S.settings.iosTipDone ? `<div class="banner" style="background:var(--acc2);color:var(--acc)">${svg('share', 'width="22" height="22"')}<span class="grow">באייפון: שיתוף ← "הוספה למסך הבית". ככה דבב נפתח כמו אפליקציה והמידע נשמר.</span><button class="icon-btn" data-tipx aria-label="סגירה">${svg('x')}</button></div>` : ''}
+    ${needBackup ? `<div class="banner">${svg('save', 'width="22" height="22"')}<span class="grow">עבר שבוע מהגיבוי האחרון</span><button class="btn" data-backup>גיבוי עכשיו</button></div>` : ''}
+    ${lists.length ? lists.map(l => {
+      const sol = l.members.map(id => S.soldiers[id]).filter(Boolean);
+      const al = sol.filter(s => alerts(s).length).length;
+      const avg = sol.length ? Math.round(sol.reduce((a, s) => a + pct(s), 0) / sol.length) : 0;
+      return `<button class="list-item" data-list="${l.id}"><div class="avatar" style="background:var(--acc)">${svg('users', 'width="22" height="22"')}</div>
+        <div class="grow"><div style="font-weight:800">${esc(l.name)}</div><div class="faint">${sol.length} חיילים · ${avg}% מולא${al ? ` · <span style="color:var(--warn)">${al} עם התראה</span>` : ''}</div></div>${svg('back', 'width="20" height="20" style="transform:scaleX(-1);color:var(--faint)"')}</button>`;
+    }).join('') : `<div class="empty">${svg('list')}<p>אין עדיין רשימות.<br>מתחילים ברשימה חדשה, למשל "מחלקה 1".</p></div>`}
+  </main>
+  <button class="btn primary fab" data-new>${svg('plus')} רשימה חדשה</button>`;
+  $('[data-new]', root).onclick = async () => {
+    const n = await promptBox('שם הרשימה', '', 'למשל: מחלקה 1'); if (!n) return;
+    const l = { id: uid(), name: n, members: [], created: Date.now() }; S.lists.push(l); save(); go({ name: 'list', id: l.id });
+  };
+  root.querySelectorAll('[data-list]').forEach(b => b.onclick = () => go({ name: 'list', id: b.dataset.list }));
+  $('[data-settings]', root).onclick = () => go({ name: 'settings' });
+  $('[data-search]', root).onclick = () => go({ name: 'search' });
+  const bb = $('[data-backup]', root); if (bb) bb.onclick = backup;
+  const tx = $('[data-tipx]', root); if (tx) tx.onclick = () => { S.settings.iosTipDone = true; save(); render(); };
+}
+
+// ====================================================================== a list
+function soldierRow(s) {
+  const al = alerts(s), p = pct(s), ph = phoneOf(s);
+  return `<div class="list-item" data-s="${s.id}" role="button" tabindex="0">
+    <div class="avatar" style="background:${colorFor(s)}">${esc(initials(s))}</div>
+    <div class="grow"><div style="font-weight:800">${esc(fullName(s))}</div>
+      <div class="faint">${esc(roleOf(s) || 'ללא תפקיד')}</div>
+      ${al.length ? `<div class="badges">${al.map(a => `<span class="badge">${esc(a)}</span>`).join('')}</div>` : ''}</div>
+    ${ph ? `<a class="icon-btn" href="tel:${esc(ph.replace(/[^\d+]/g, ''))}" data-stop aria-label="חיוג">${svg('phone')}</a>` : ''}
+    <div class="ring" style="--p:${p}"><span>${p}%</span></div></div>`;
+}
+function vList(root) {
+  const l = S.lists.find(x => x.id === route.id); if (!l) return go({ name: 'home' }, false);
+  const tab = route.tab || 'people';
+  const sol = l.members.map(id => S.soldiers[id]).filter(Boolean).sort((a, b) => fullName(a).localeCompare(fullName(b), 'he'));
+  root.innerHTML = `
+  <header class="top"><button class="icon-btn" data-back aria-label="חזרה">${svg('back')}</button><h1>${esc(l.name)}</h1>
+    <button class="icon-btn" data-export aria-label="ייצוא">${svg('share')}</button>
+    <button class="icon-btn" data-menu aria-label="עוד">${svg('dots')}</button></header>
+  <main>
+    <div class="tabs"><button data-tab="people" class="${tab === 'people' ? 'on' : ''}">חיילים (${sol.length})</button><button data-tab="status" class="${tab === 'status' ? 'on' : ''}">תמונת מצב</button></div>
+    <div id="body"></div>
+  </main>
+  <button class="btn primary fab" data-add>${svg('plus')} חייל</button>`;
+  const body = $('#body', root);
+  if (tab === 'people') {
+    body.innerHTML = sol.length ? `<input type="search" placeholder="חיפוש ברשימה" data-f style="margin-bottom:10px">` + `<div data-rows>${sol.map(soldierRow).join('')}</div>`
+      : `<div class="empty">${svg('users')}<p>הרשימה ריקה.<br>מוסיפים חייל עם הכפתור למטה.</p></div>`;
+    const f = $('[data-f]', body);
+    if (f) f.oninput = () => { const q = f.value.trim(); $('[data-rows]', body).innerHTML = sol.filter(s => !q || fullName(s).includes(q) || roleOf(s).includes(q)).map(soldierRow).join(''); bindRows(); };
+    const bindRows = () => body.querySelectorAll('[data-s]').forEach(r => r.onclick = e => { if (e.target.closest('[data-stop]')) return; go({ name: 'soldier', id: r.dataset.s, list: l.id }); });
+    bindRows();
+  } else statusView(body, sol);
+  root.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { route.tab = b.dataset.tab; render(); });
+  $('[data-back]', root).onclick = back;
+  $('[data-add]', root).onclick = () => addSoldier(l);
+  $('[data-export]', root).onclick = () => exportDialog(sol, l.name);
+  $('[data-menu]', root).onclick = () => sheet(`<h2>${esc(l.name)}</h2>
+    <button class="menu-item" data-ren>${svg('edit')} שינוי שם</button>
+    <button class="menu-item" data-share>${svg('share')} שליחת הרשימה למפקד (קובץ דבב)</button>
+    <button class="menu-item" data-exp>${svg('file')} ייצוא (וורד, אקסל, PDF, טקסט)</button>
+    <button class="menu-item" data-del style="color:var(--warn)">${svg('trash')} מחיקת הרשימה</button>`, (el, close) => {
+    $('[data-ren]', el).onclick = async () => { close(); const n = await promptBox('שם הרשימה', l.name); if (n) { l.name = n; save(); render(); } };
+    $('[data-share]', el).onclick = () => { close(); shareList(l); };
+    $('[data-exp]', el).onclick = () => { close(); exportDialog(sol, l.name); };
+    $('[data-del]', el).onclick = async () => {
+      close();
+      if (!await confirmBox(`למחוק את "${l.name}"? חיילים שלא נמצאים ברשימה אחרת יימחקו גם הם.`, 'מחיקה')) return;
+      S.lists = S.lists.filter(x => x !== l);
+      for (const id of l.members) if (!S.lists.some(x => x.members.includes(id))) delete S.soldiers[id];
+      save(); go({ name: 'home' }, false);
+    };
+  });
+}
+function addSoldier(l) {
+  const others = Object.values(S.soldiers).filter(s => !l.members.includes(s.id));
+  sheet(`<h2>חייל חדש</h2>
+    <label class="lbl">שם פרטי</label><input type="text" data-first autocomplete="off">
+    <label class="lbl">שם משפחה</label><input type="text" data-last autocomplete="off">
+    <button class="btn primary block" style="margin-top:14px" data-ok>התחלת ראיון</button>
+    ${others.length ? `<p class="muted" style="margin:18px 2px 8px">או להוסיף חייל שכבר קיים ברשימה אחרת:</p><input type="search" placeholder="חיפוש" data-q><div data-o style="margin-top:8px;max-height:40vh;overflow:auto"></div>` : ''}`,
+  (el, close) => {
+    setTimeout(() => $('[data-first]', el).focus(), 60);
+    $('[data-ok]', el).onclick = () => {
+      const first = $('[data-first]', el).value.trim(), last = $('[data-last]', el).value.trim();
+      if (!first && !last) { toast('צריך לפחות שם'); return; }
+      const s = { id: uid(), first, last, interviewer: S.settings.interviewer || '', interviewDate: new Date().toISOString().slice(0, 10), created: Date.now(), updated: Date.now(), answers: {} };
+      S.soldiers[s.id] = s; l.members.push(s.id); save(); close();
+      go({ name: 'soldier', id: s.id, list: l.id, mode: 'wizard' });
+    };
+    const q = $('[data-q]', el);
+    if (q) { const draw = () => { $('[data-o]', el).innerHTML = others.filter(s => fullName(s).includes(q.value.trim())).map(s => `<button class="menu-item" data-pick="${s.id}"><div class="avatar" style="background:${colorFor(s)};width:34px;height:34px">${esc(initials(s))}</div>${esc(fullName(s))}</button>`).join('');
+      el.querySelectorAll('[data-pick]').forEach(b => b.onclick = () => { l.members.push(b.dataset.pick); save(); close(); render(); toast('נוסף לרשימה'); }); }; q.oninput = draw; draw(); }
+  });
+}
+
+// ---------- the status picture: medical alerts, summaries, what's missing, birthdays
+function statusView(body, sol) {
+  if (!sol.length) { body.innerHTML = `<div class="empty"><p>אין עדיין חיילים ברשימה.</p></div>`; return; }
+  const withAl = sol.filter(s => alerts(s).length);
+  const choiceQs = S.template.filter(q => q.type === 'choice');
+  const birth = byKey('birth'); const today = new Date();
+  const bdays = birth ? sol.map(s => {
+    const v = ans(s, birth).value; if (!v) return null;
+    const b = new Date(v); let next = new Date(today.getFullYear(), b.getMonth(), b.getDate());
+    const t0 = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    if (next < t0) next = new Date(today.getFullYear() + 1, b.getMonth(), b.getDate());
+    const days = Math.round((next - t0) / 864e5);
+    return days <= 31 ? { s, days, turns: next.getFullYear() - b.getFullYear(), date: next } : null;
+  }).filter(Boolean).sort((a, b) => a.days - b.days) : [];
+  body.innerHTML = `
+    <div class="card"><div class="row" style="margin-bottom:8px">${svg('alert', 'width="22" height="22" style="color:var(--warn)"')}<b class="grow">התראות רפואיות (${withAl.length})</b></div>
+      ${withAl.length ? withAl.map(s => `<button class="menu-item" data-s="${s.id}"><span class="grow">${esc(fullName(s))}</span><span class="badges">${alerts(s).map(a => `<span class="badge">${esc(a)}</span>`).join('')}</span></button>`).join('') : '<div class="muted">אין התראות 👍</div>'}
+      ${withAl.length ? `<div class="faint" style="margin-top:6px">${withAl.map(s => S.template.filter(q => q.alert && alerts(s).includes(q.alert)).map(q => { const a = ans(s, q); const d = [a.other, a.note].filter(Boolean).join(' · '); return d ? `${esc(fullName(s))} – ${esc(q.alert)}: ${esc(d)}` : ''; }).filter(Boolean).join('<br>')).filter(Boolean).join('<br>')}</div>` : ''}</div>
+    <div class="card"><div class="row" style="margin-bottom:8px">${svg('cake', 'width="22" height="22" style="color:var(--acc)"')}<b class="grow">ימי הולדת בחודש הקרוב</b></div>
+      ${bdays.length ? bdays.map(x => `<div class="row" style="padding:6px 2px"><span class="grow">${esc(fullName(x.s))} <span class="faint">(בן/בת ${x.turns})</span></span><span class="badge ${x.days === 0 ? 'ok' : x.days <= 7 ? 'y' : 'b'}">${x.days === 0 ? 'היום! 🎉' : x.days === 1 ? 'מחר' : `${x.date.getDate()}.${x.date.getMonth() + 1} · עוד ${x.days} ימים`}</span></div>`).join('') : '<div class="muted">אין ימי הולדת בחודש הקרוב</div>'}</div>
+    <div class="card"><div class="row" style="margin-bottom:8px">${svg('chart', 'width="22" height="22" style="color:var(--acc)"')}<b class="grow">סיכומים</b></div>
+      ${choiceQs.map(q => {
+        const cnt = {}; let tot = 0;
+        sol.forEach(s => { const a = ans(s, q); const v = a.value || (a.other ? 'אחר' : ''); if (v) { cnt[v] = (cnt[v] || 0) + 1; tot++; } });
+        if (!tot) return '';
+        return `<div style="margin:10px 0 4px;font-weight:700">${esc(q.title)}</div>` + Object.entries(cnt).sort((a, b) => b[1] - a[1]).map(([k, v]) =>
+          `<div class="bar"><span style="width:110px">${esc(k)}</span><span class="track"><i style="width:${v / sol.length * 100}%"></i></span><b>${v}</b></div>`).join('');
+      }).join('') || '<div class="muted">עוד אין תשובות לשאלות עם אופציות</div>'}</div>
+    <div class="card"><div class="row" style="margin-bottom:8px">${svg('list', 'width="22" height="22" style="color:var(--acc)"')}<b class="grow">מה חסר</b></div>
+      ${sol.slice().sort((a, b) => pct(a) - pct(b)).map(s => { const miss = S.template.filter(q => !filled(s, q)); return `<button class="menu-item" data-s="${s.id}" style="align-items:flex-start"><div class="ring" style="--p:${pct(s)}"><span>${pct(s)}%</span></div><div class="grow"><b>${esc(fullName(s))}</b><div class="faint">${miss.length ? miss.map(q => (ans(s, q).skipped ? '⏭ ' : '') + q.title).join(' · ') : 'הכול מולא ✓'}</div></div></button>`; }).join('')}</div>`;
+  body.querySelectorAll('[data-s]').forEach(b => b.onclick = () => go({ name: 'soldier', id: b.dataset.s, list: route.id }));
+}
+
+// ====================================================================== one soldier
+function inputFor(q, f, val, path) {   // f = sub-field or the question itself
+  const t = f.type, v = esc(val || ''), d = `data-path="${path}"`;
+  if (t === 'phone') return `<input type="tel" inputmode="tel" ${d} value="${v}" placeholder="05X-XXXXXXX" class="ltr">`;
+  if (t === 'number') return `<input type="text" inputmode="numeric" ${d} value="${v}" class="ltr">`;
+  if (t === 'date') return `<input type="date" ${d} value="${v}">`;
+  if (t === 'city') return `<input type="text" list="cities" ${d} value="${v}" autocomplete="off">`;
+  if (t === 'choice') return `<div class="chips" ${d}>${(f.options || []).map(o => `<button type="button" class="chip ${val === o ? 'on' : ''}" data-opt="${esc(o)}">${esc(o)}</button>`).join('')}</div>`;
+  if (q.long) return micWrap(`<textarea ${d}>${v}</textarea>`);
+  return micWrap(`<input type="text" ${d} value="${v}">`);
+}
+function questionHTML(s, q, i, big) {
+  const a = ans(s, q);
+  let main = '';
+  if (q.type === 'group') main = `<div class="sub">${q.fields.map(f => `<div><label class="lbl">${esc(f.label)}</label>${inputFor(q, f, (a.sub || {})[f.id], q.id + '.' + f.id)}${f.type === 'phone' ? telLinks((a.sub || {})[f.id]) : ''}</div>`).join('')}</div>`;
+  else {
+    main = inputFor(q, q, a.value, q.id);
+    if (q.type === 'choice') main += `<div style="margin-top:8px">${micWrap(`<input type="text" data-path="${q.id}.__other" value="${esc(a.other || '')}" placeholder="תשובה אחרת / פירוט">`)}</div>`;
+    if (q.type === 'phone') main += telLinks(a.value);
+    if (q.calc && a.value) main += `<span class="calc">${esc(calcText(q, a.value))}</span>`;
+  }
+  return `<div class="${big ? 'wiz' : 'card'} ${a.skipped ? 'skipped' : ''}" data-q="${q.id}" ${big ? '' : 'style="scroll-margin-top:80px"'}>
+    <div class="row"><span class="qnum">${i + 1}</span><span class="grow ${big ? '' : 'qtitle'}">${big ? '' : esc(q.title)}</span>${a.skipped ? '<span class="badge y">דולג</span>' : ''}${q.alert ? `<span class="badge">${esc(q.alert)}</span>` : ''}</div>
+    ${big ? `<div class="qtitle">${esc(q.title)}</div>` : ''}
+    ${main}
+    <div class="note">${micWrap(`<textarea data-path="${q.id}.__note" placeholder="הערה" style="min-height:${big ? 80 : 48}px">${esc(a.note || '')}</textarea>`)}</div></div>`;
+}
+function bindAnswers(root, s, onChange) {
+  const T = Object.fromEntries(S.template.map(q => [q.id, q]));
+  root.addEventListener('input', e => {
+    const p = e.target.dataset && e.target.dataset.path; if (!p) return;
+    const [qid, f] = p.split('.'); const q = T[qid]; if (!q) return;
+    const v = e.target.value;
+    if (f === '__note') setAns(s, q, { note: v });
+    else if (f === '__other') setAns(s, q, { other: v, skipped: false });
+    else if (f) setAns(s, q, { sub: Object.assign({}, ans(s, q).sub, { [f]: v }), skipped: false });
+    else setAns(s, q, { value: v, skipped: false });
+    if (e.target.type === 'date') onChange && onChange(q);
+  });
+  root.addEventListener('change', e => {   // a phone number: refresh the call / WhatsApp buttons once typing is done
+    const p = e.target.dataset && e.target.dataset.path; if (!p || e.target.type !== 'tel') return;
+    const q = T[p.split('.')[0]]; if (q) onChange && onChange(q);
+  });
+  root.addEventListener('click', e => {
+    const c = e.target.closest('[data-opt]'); if (!c) return;
+    const box = c.parentElement; const [qid, f] = box.dataset.path.split('.'); const q = T[qid];
+    const on = !c.classList.contains('on');
+    box.querySelectorAll('.chip').forEach(x => x.classList.remove('on')); if (on) c.classList.add('on');
+    const v = on ? c.dataset.opt : '';
+    if (f) setAns(s, q, { sub: Object.assign({}, ans(s, q).sub, { [f]: v }), skipped: false });
+    else setAns(s, q, { value: v, skipped: false });
+    onChange && onChange(q, true);
+  });
+}
+function vSoldier(root) {
+  const s = S.soldiers[route.id]; if (!s) return back();
+  const mode = route.mode || S.settings.mode || 'wizard';
+  const T = S.template;
+  root.innerHTML = `
+  <header class="top"><button class="icon-btn" data-back aria-label="חזרה">${svg('back')}</button><h1>${esc(fullName(s))}</h1>
+    <button class="icon-btn" data-export aria-label="ייצוא">${svg('share')}</button>
+    <button class="icon-btn" data-menu aria-label="עוד">${svg('dots')}</button></header>
+  <main>
+    <div class="tabs"><button data-m="wizard" class="${mode === 'wizard' ? 'on' : ''}">ראיון</button><button data-m="form" class="${mode === 'form' ? 'on' : ''}">כל השאלות</button></div>
+    <div id="body"></div>
+  </main>`;
+  const body = $('#body', root);
+  root.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { route.mode = b.dataset.m; S.settings.mode = b.dataset.m; save(); render(); });
+  $('[data-back]', root).onclick = back;
+  $('[data-export]', root).onclick = () => exportDialog([s], fullName(s));
+  $('[data-menu]', root).onclick = () => soldierMenu(s);
+  if (mode === 'form') {
+    body.innerHTML = `<div class="card"><div class="row"><div class="avatar" style="background:${colorFor(s)}">${esc(initials(s))}</div><div class="grow"><b>${esc(fullName(s))}</b><div class="faint">ראיון: ${fmtDate(s.interviewDate)}${s.interviewer ? ' · ' + esc(s.interviewer) : ''}</div></div><div class="ring" style="--p:${pct(s)}"><span>${pct(s)}%</span></div></div>
+      <div class="badges" style="margin-top:8px">${S.lists.filter(l => l.members.includes(s.id)).map(l => `<span class="badge b">${esc(l.name)}</span>`).join('')}</div></div>`
+      + T.map((q, i) => questionHTML(s, q, i, false)).join('');
+    bindAnswers(body, s, (q, chip) => { if (!chip) { const el = body.querySelector(`[data-q="${q.id}"]`); const n = document.createElement('div'); n.innerHTML = questionHTML(s, q, T.indexOf(q), false); el.replaceWith(n.firstElementChild); } });
+    if (route.focus) { const el = body.querySelector(`[data-q="${route.focus}"]`); if (el) setTimeout(() => el.scrollIntoView({ block: 'start' }), 30); route.focus = null; }
+    return;
+  }
+  // interview: one question per screen
+  let i = route.i ?? Math.max(0, T.findIndex(q => !filled(s, q) && !ans(s, q).skipped));
+  if (i < 0 || i >= T.length) i = 0;
+  const draw = () => {
+    route.i = i;
+    const q = T[i];
+    body.innerHTML = `<div class="row" style="margin-bottom:6px"><span class="faint grow">שאלה ${i + 1} מתוך ${T.length}</span><span class="faint">${pct(s)}% מולא</span></div>
+      <div class="progress"><i style="width:${(i + 1) / T.length * 100}%"></i></div>
+      <div class="card" style="margin-top:12px">${questionHTML(s, q, i, true)}</div>`;
+    const first = body.querySelector('input:not([type=date]),textarea'); if (first && q.type !== 'choice' && q.type !== 'date' && !matchMedia('(pointer:coarse)').matches) first.focus();
+    nav.querySelector('[data-prev]').disabled = i === 0;
+    nav.querySelector('[data-next]').innerHTML = i === T.length - 1 ? `${svg('check')} סיום` : 'הבא';
+  };
+  const nav = document.createElement('div'); nav.className = 'wiz-nav';
+  nav.innerHTML = `<button class="btn ghost" data-prev>הקודם</button><button class="btn" data-skip>${svg('skip')} דלג</button><button class="btn primary" data-next>הבא</button>`;
+  root.append(nav);
+  nav.querySelector('[data-prev]').onclick = () => { if (i > 0) { i--; draw(); } };
+  nav.querySelector('[data-next]').onclick = () => {
+    if (i < T.length - 1) { i++; draw(); window.scrollTo(0, 0); return; }
+    const miss = T.filter(q => !filled(s, q));
+    toast(miss.length ? `נשמר. חסרות ${miss.length} שאלות` : 'הדבב הושלם ✓');
+    route.mode = 'form'; render();
+  };
+  nav.querySelector('[data-skip]').onclick = () => { setAns(s, T[i], { skipped: true }); if (i < T.length - 1) { i++; draw(); } else nav.querySelector('[data-next]').click(); };
+  bindAnswers(body, s, (q, chip) => {
+    if (chip && q.type === 'choice') setTimeout(() => { if (i < T.length - 1 && T[i] === q) { i++; draw(); } }, 280);   // picked an option: on to the next question
+    else if (!chip) draw();
+  });
+  draw();
+}
+function soldierMenu(s) {
+  sheet(`<h2>${esc(fullName(s))}</h2>
+    <button class="menu-item" data-ren>${svg('edit')} פרטים (שם, מראיין, תאריך ראיון)</button>
+    <button class="menu-item" data-lists>${svg('list')} באילו רשימות</button>
+    <button class="menu-item" data-exp>${svg('file')} ייצוא הדבב של החייל</button>
+    ${route.list ? `<button class="menu-item" data-rm>${svg('x')} הוצאה מהרשימה הזאת</button>` : ''}
+    <button class="menu-item" data-del style="color:var(--warn)">${svg('trash')} מחיקת החייל מכל הרשימות</button>`, (el, close) => {
+    $('[data-ren]', el).onclick = () => { close(); detailsDialog(s); };
+    $('[data-lists]', el).onclick = () => { close(); listsDialog(s); };
+    $('[data-exp]', el).onclick = () => { close(); exportDialog([s], fullName(s)); };
+    const rm = $('[data-rm]', el);
+    if (rm) rm.onclick = async () => { close(); const l = S.lists.find(x => x.id === route.list); if (!l) return;
+      const only = !S.lists.some(x => x !== l && x.members.includes(s.id));
+      if (!await confirmBox(only ? `${fullName(s)} לא נמצא ברשימה אחרת, ולכן יימחק. להמשיך?` : `להוציא את ${fullName(s)} מ"${l.name}"?`, only ? 'מחיקה' : 'הוצאה')) return;
+      l.members = l.members.filter(x => x !== s.id); if (only) delete S.soldiers[s.id]; save(); back(); };
+    $('[data-del]', el).onclick = async () => { close(); if (!await confirmBox(`למחוק את ${fullName(s)} וכל המידע שלו?`, 'מחיקה')) return;
+      S.lists.forEach(l => l.members = l.members.filter(x => x !== s.id)); delete S.soldiers[s.id]; save(); back(); };
+  });
+}
+function detailsDialog(s) {
+  sheet(`<h2>פרטי החייל</h2>
+    <label class="lbl">שם פרטי</label><input type="text" data-k="first" value="${esc(s.first)}">
+    <label class="lbl">שם משפחה</label><input type="text" data-k="last" value="${esc(s.last)}">
+    <label class="lbl">מי ריאיין</label><input type="text" data-k="interviewer" value="${esc(s.interviewer)}">
+    <label class="lbl">תאריך הראיון</label><input type="date" data-k="interviewDate" value="${esc(s.interviewDate)}">
+    <p class="faint">עודכן לאחרונה: ${new Date(s.updated || s.created).toLocaleString('he-IL')}</p>
+    <button class="btn primary block" data-ok>שמירה</button>`, (el, close) => {
+    $('[data-ok]', el).onclick = () => { el.querySelectorAll('[data-k]').forEach(i => s[i.dataset.k] = i.value.trim()); s.updated = Date.now(); save(); close(); render(); };
+  });
+}
+function listsDialog(s) {
+  sheet(`<h2>הרשימות של ${esc(fullName(s))}</h2>${S.lists.map(l => `<label class="check-row"><input type="checkbox" data-l="${l.id}" ${l.members.includes(s.id) ? 'checked' : ''}><span>${esc(l.name)}</span></label>`).join('')}
+    <button class="btn primary block" style="margin-top:12px" data-ok>שמירה</button>`, (el, close) => {
+    $('[data-ok]', el).onclick = () => {
+      const on = [...el.querySelectorAll('[data-l]')].filter(c => c.checked).map(c => c.dataset.l);
+      if (!on.length) { toast('חייל צריך להיות לפחות ברשימה אחת'); return; }
+      S.lists.forEach(l => { const has = l.members.includes(s.id); if (on.includes(l.id) && !has) l.members.push(s.id); if (!on.includes(l.id) && has) l.members = l.members.filter(x => x !== s.id); });
+      save(); close(); render();
+    };
+  });
+}
+
+// ====================================================================== search everyone
+function vSearch(root) {
+  root.innerHTML = `<header class="top"><button class="icon-btn" data-back>${svg('back')}</button><input type="search" placeholder="חיפוש חייל בכל הרשימות" data-q style="flex:1"></header><main data-r></main>`;
+  $('[data-back]', root).onclick = back;
+  const q = $('[data-q]', root), r = $('[data-r]', root);
+  const draw = () => {
+    const t = q.value.trim();
+    const all = Object.values(S.soldiers).filter(s => !t || fullName(s).includes(t) || roleOf(s).includes(t) || S.template.some(x => answerText(s, x, true).includes(t)));
+    r.innerHTML = all.length ? all.map(soldierRow).join('') : '<div class="empty"><p>לא נמצא</p></div>';
+    r.querySelectorAll('[data-s]').forEach(x => x.onclick = e => { if (e.target.closest('[data-stop]')) return; go({ name: 'soldier', id: x.dataset.s }); });
+  };
+  q.oninput = draw; draw(); setTimeout(() => q.focus(), 50);
+}
+
+// ====================================================================== settings
+function vSettings(root) {
+  const st = S.settings, m = meta();
+  root.innerHTML = `
+  <header class="top"><button class="icon-btn" data-back>${svg('back')}</button><h1>הגדרות</h1></header>
+  <main>
+    <div class="card"><label class="lbl" style="margin-top:0">השם שלך (נשמר אוטומטית כ"מי ריאיין")</label><input type="text" data-int value="${esc(st.interviewer)}"></div>
+    <div class="card">
+      <button class="menu-item" data-tpl>${svg('edit')} עריכת תבנית השאלות</button>
+      <label class="check-row"><input type="checkbox" data-big ${st.big ? 'checked' : ''}><span>כתב גדול</span></label>
+      <label class="lbl">מראה</label>
+      <div class="chips" data-theme>${[['auto', 'לפי הטלפון'], ['light', 'בהיר'], ['dark', 'כהה']].map(([k, l]) => `<button class="chip ${st.theme === k ? 'on' : ''}" data-v="${k}">${l}</button>`).join('')}</div>
+    </div>
+    <div class="card"><b>קוד נעילה</b><p class="muted">${m.locked ? 'האפליקציה נעולה בקוד, והמידע שמור מוצפן.' : 'בלי קוד. אפשר להוסיף קוד, ואז המידע נשמר מוצפן.'}</p>
+      ${window.crypto && crypto.subtle ? (m.locked ? `<button class="btn ghost block" data-pin>שינוי קוד</button><button class="btn danger block" style="margin-top:8px" data-nopin>הסרת הקוד</button>` : `<button class="btn block" data-pin>${svg('lock')} הוספת קוד</button>`) : '<p class="faint">אין הצפנה זמינה בדפדפן הזה.</p>'}
+      <p class="faint">אם שוכחים את הקוד אי אפשר לשחזר את המידע (רק מקובץ גיבוי).</p></div>
+    <div class="card"><b>גיבוי ושחזור</b><p class="muted">כל המידע נמצא רק במכשיר הזה. גיבוי אחרון: ${st.lastBackup ? new Date(st.lastBackup).toLocaleDateString('he-IL') : 'אף פעם'}</p>
+      <button class="btn block" data-backup>${svg('save')} גיבוי עכשיו (קובץ דבב של הכול)</button>
+      <button class="btn ghost block" style="margin-top:8px" data-import>${svg('upload')} פתיחת קובץ דבב (גיבוי או רשימה ממפקד)</button>
+      <input type="file" accept=".dabab,.json,application/json,text/plain" hidden data-file></div>
+    <p class="faint" style="text-align:center">דבב · המידע לא יוצא מהמכשיר אלא אם מייצאים אותו</p>
+  </main>`;
+  $('[data-back]', root).onclick = back;
+  $('[data-int]', root).oninput = e => { st.interviewer = e.target.value; save(); };
+  $('[data-tpl]', root).onclick = () => go({ name: 'template' });
+  $('[data-big]', root).onchange = e => { st.big = e.target.checked; save(); render(); };
+  root.querySelectorAll('[data-theme] .chip').forEach(c => c.onclick = () => { st.theme = c.dataset.v; save(); render(); });
+  const p = $('[data-pin]', root); if (p) p.onclick = () => pinDialog();
+  const np = $('[data-nopin]', root); if (np) np.onclick = async () => { if (await confirmBox('להסיר את הקוד? המידע יישמר בלי הצפנה.', 'הסרה')) { await removePin(); render(); toast('הקוד הוסר'); } };
+  $('[data-backup]', root).onclick = backup;
+  $('[data-import]', root).onclick = () => $('[data-file]', root).click();
+  $('[data-file]', root).onchange = e => { const f = e.target.files[0]; e.target.value = ''; if (f) importFile(f); };
+}
+function pinDialog() {
+  sheet(`<h2>קוד נעילה</h2><label class="lbl">קוד חדש (4 ספרות לפחות)</label><input type="password" inputmode="numeric" data-a class="ltr"><label class="lbl">שוב</label><input type="password" inputmode="numeric" data-b class="ltr">
+    <button class="btn primary block" style="margin-top:14px" data-ok>שמירה</button>`, (el, close) => {
+    $('[data-ok]', el).onclick = async () => {
+      const a = $('[data-a]', el).value, b = $('[data-b]', el).value;
+      if (!/^\d{4,}$/.test(a)) { toast('לפחות 4 ספרות'); return; }
+      if (a !== b) { toast('הקודים לא זהים'); return; }
+      await setPin(a); close(); render(); toast('הקוד נשמר והמידע מוצפן');
+    };
+  });
+}
+
+// ====================================================================== the question template editor
+const TYPES = [['text', 'טקסט'], ['choice', 'אופציות'], ['number', 'מספר'], ['phone', 'טלפון'], ['date', 'תאריך'], ['city', 'עיר'], ['group', 'כמה שדות']];
+function vTemplate(root) {
+  const T = S.template;
+  root.innerHTML = `
+  <header class="top"><button class="icon-btn" data-back>${svg('back')}</button><h1>תבנית השאלות</h1></header>
+  <main><p class="muted">התבנית משותפת לכל הרשימות. תשובות שכבר נכתבו נשמרות גם אם משנים שאלה.</p>
+    ${T.map((q, i) => `<div class="drag-row"><span class="qnum">${i + 1}</span><button class="grow" style="text-align:start" data-e="${i}"><b>${esc(q.title)}</b><div class="faint">${esc((TYPES.find(t => t[0] === q.type) || [])[1] || '')}${q.type === 'choice' ? ': ' + esc((q.options || []).join(' / ')) : ''}${q.type === 'group' ? ': ' + esc(q.fields.map(f => f.label).join(' / ')) : ''}${q.alert ? ' · התראה: ' + esc(q.alert) : ''}${q.sensitive ? ' · מזהה' : ''}</div></button>
+      <button class="icon-btn" data-u="${i}" aria-label="למעלה" ${i ? '' : 'disabled'}>${svg('up')}</button><button class="icon-btn" data-d="${i}" aria-label="למטה" ${i < T.length - 1 ? '' : 'disabled'}>${svg('down')}</button></div>`).join('')}
+    <button class="btn ghost block" style="margin-top:8px" data-reset>חזרה לתבנית המקורית</button>
+  </main>
+  <button class="btn primary fab" data-add>${svg('plus')} שאלה</button>`;
+  $('[data-back]', root).onclick = back;
+  root.querySelectorAll('[data-u]').forEach(b => b.onclick = () => { const i = +b.dataset.u; [T[i - 1], T[i]] = [T[i], T[i - 1]]; save(); render(); });
+  root.querySelectorAll('[data-d]').forEach(b => b.onclick = () => { const i = +b.dataset.d; [T[i + 1], T[i]] = [T[i], T[i + 1]]; save(); render(); });
+  root.querySelectorAll('[data-e]').forEach(b => b.onclick = () => editQuestion(T[+b.dataset.e]));
+  $('[data-add]', root).onclick = () => editQuestion(null);
+  $('[data-reset]', root).onclick = async () => { if (await confirmBox('לחזור לתבנית המקורית? שאלות שהוספת יוסרו מהתבנית (התשובות שלהן נשמרות).', 'חזרה')) { S.template = defaultTemplate(); save(); render(); } };
+}
+function editQuestion(q) {
+  const isNew = !q;
+  const d = q ? JSON.parse(JSON.stringify(q)) : { id: 'q' + uid(), title: '', type: 'text' };
+  sheet(`<h2>${isNew ? 'שאלה חדשה' : 'עריכת שאלה'}</h2>
+    <label class="lbl">השאלה</label><input type="text" data-title value="${esc(d.title)}">
+    <label class="lbl">סוג התשובה</label><div class="chips" data-type>${TYPES.map(([k, l]) => `<button class="chip ${d.type === k ? 'on' : ''}" data-v="${k}">${l}</button>`).join('')}</div>
+    <div data-opts></div>
+    <label class="lbl">התראה (מילה שתופיע באדום ליד החייל, למשל "אלרגיה"). ריק = בלי</label><input type="text" data-alert value="${esc(d.alert || '')}">
+    <label class="check-row"><input type="checkbox" data-sens ${d.sensitive ? 'checked' : ''}><span>מידע מזהה (אפשר להסתיר בייצוא)</span></label>
+    <label class="check-row"><input type="checkbox" data-long ${d.long ? 'checked' : ''}><span>תשובה ארוכה</span></label>
+    <div class="row" style="margin-top:12px"><button class="btn primary grow" data-ok>שמירה</button>${isNew ? '' : `<button class="btn danger" data-del>${svg('trash')}</button>`}</div>`, (el, close) => {
+    const opts = $('[data-opts]', el);
+    const drawOpts = () => {
+      if (d.type === 'choice') opts.innerHTML = `<label class="lbl">האופציות (אחת בכל שורה). תמיד יש גם "תשובה אחרת" והערה.</label><textarea data-o>${esc((d.options || []).join('\n'))}</textarea>`;
+      else if (d.type === 'group') opts.innerHTML = `<label class="lbl">השדות (אחד בכל שורה)</label><textarea data-g>${esc((d.fields || []).map(f => f.label).join('\n'))}</textarea>`;
+      else opts.innerHTML = '';
+    };
+    drawOpts();
+    el.querySelectorAll('[data-type] .chip').forEach(c => c.onclick = () => { el.querySelectorAll('[data-type] .chip').forEach(x => x.classList.remove('on')); c.classList.add('on'); d.type = c.dataset.v; drawOpts(); });
+    $('[data-ok]', el).onclick = () => {
+      d.title = $('[data-title]', el).value.trim(); if (!d.title) { toast('צריך לכתוב שאלה'); return; }
+      d.alert = $('[data-alert]', el).value.trim() || undefined;
+      d.sensitive = $('[data-sens]', el).checked; d.long = $('[data-long]', el).checked;
+      const o = $('[data-o]', el); if (o) d.options = o.value.split('\n').map(x => x.trim()).filter(Boolean);
+      const g = $('[data-g]', el);
+      if (g) { const old = d.fields || []; d.fields = g.value.split('\n').map(x => x.trim()).filter(Boolean).map((label, i) => old.find(f => f.label === label) || { id: 'f' + i + uid(), label, type: /טלפון/.test(label) ? 'phone' : 'text' }); }
+      if (isNew) S.template.push(d); else Object.assign(q, d);
+      save(); close(); render();
+    };
+    const del = $('[data-del]', el);
+    if (del) del.onclick = async () => { close(); if (await confirmBox(`למחוק את השאלה "${q.title}" מהתבנית?`, 'מחיקה')) { S.template = S.template.filter(x => x !== q); save(); render(); } };
+  });
+}
+
+// ====================================================================== files: zip, docx, xlsx, txt, print
+const CRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+const crc32 = b => { let c = 0xFFFFFFFF; for (let i = 0; i < b.length; i++) c = CRC[(c ^ b[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+function zip(files) {   // [{name, data(string)}] → Uint8Array, stored (no compression)
+  const enc = new TextEncoder(), parts = [], central = []; let off = 0;
+  for (const f of files) {
+    const name = enc.encode(f.name), data = enc.encode(f.data), crc = crc32(data);
+    const h = new DataView(new ArrayBuffer(30));
+    h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint16(8, 0, true);
+    h.setUint32(14, crc, true); h.setUint32(18, data.length, true); h.setUint32(22, data.length, true); h.setUint16(26, name.length, true);
+    parts.push(new Uint8Array(h.buffer), name, data);
+    const c = new DataView(new ArrayBuffer(46));
+    c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true);
+    c.setUint32(16, crc, true); c.setUint32(20, data.length, true); c.setUint32(24, data.length, true); c.setUint16(28, name.length, true); c.setUint32(42, off, true);
+    central.push(new Uint8Array(c.buffer), name);
+    off += 30 + name.length + data.length;
+  }
+  const csize = central.reduce((a, b) => a + b.length, 0);
+  const e = new DataView(new ArrayBuffer(22));
+  e.setUint32(0, 0x06054b50, true); e.setUint16(8, files.length, true); e.setUint16(10, files.length, true); e.setUint32(12, csize, true); e.setUint32(16, off, true);
+  const all = [...parts, ...central, new Uint8Array(e.buffer)], out = new Uint8Array(all.reduce((a, b) => a + b.length, 0));
+  let p = 0; for (const a of all) { out.set(a, p); p += a.length; }
+  return out;
+}
+const x = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '');
+function columns(qs) {   // the export's columns: groups become one column per field
+  const cols = [];
+  for (const q of qs) {
+    if (q.type === 'group') q.fields.forEach(f => cols.push({ title: `${q.title} – ${f.label}`, get: s => (ans(s, q).sub || {})[f.id] || '' }));
+    else cols.push({ title: q.title, get: s => { const a = ans(s, q); let v = q.type === 'date' ? fmtDate(a.value) + calcText(q, a.value, true) : a.value || ''; if (a.other) v = v ? `${v} (${a.other})` : a.other; return v; } });
+    cols.push({ title: `${q.title} – הערה`, get: s => ans(s, q).note || '', note: true });
+  }
+  return cols;
+}
+function xlsx(sol, qs) {
+  let cols = [{ title: 'שם פרטי', get: s => s.first }, { title: 'שם משפחה', get: s => s.last }, ...columns(qs), { title: 'מי ריאיין', get: s => s.interviewer }, { title: 'תאריך הראיון', get: s => fmtDate(s.interviewDate) }];
+  cols = cols.filter(c => !c.note || sol.some(s => c.get(s)));   // note columns only where someone has a note
+  const colName = i => { let s = ''; i++; while (i) { const m = (i - 1) % 26; s = String.fromCharCode(65 + m) + s; i = Math.floor((i - 1) / 26); } return s; };
+  const cell = (r, c, v, st) => `<c r="${colName(c)}${r}" t="inlineStr"${st ? ` s="${st}"` : ''}><is><t xml:space="preserve">${x(v)}</t></is></c>`;
+  const rows = [`<row r="1">${cols.map((c, i) => cell(1, i, c.title, 1)).join('')}</row>`,
+    ...sol.map((s, ri) => `<row r="${ri + 2}">${cols.map((c, i) => cell(ri + 2, i, c.get(s), 2)).join('')}</row>`)];
+  const sheet = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+    <sheetViews><sheetView rightToLeft="1" workbookViewId="0"><pane ySplit="1" xSplit="2" topLeftCell="C2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>
+    <cols>${cols.map((c, i) => `<col min="${i + 1}" max="${i + 1}" width="${Math.min(40, Math.max(12, c.title.length * 1.1))}" customWidth="1"/>`).join('')}</cols>
+    <sheetData>${rows.join('')}</sheetData><autoFilter ref="A1:${colName(cols.length - 1)}${sol.length + 1}"/></worksheet>`;
+  const styles = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+    <fonts count="2"><font><sz val="11"/><name val="Arial"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Arial"/></font></fonts>
+    <fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF1F5BD8"/></patternFill></fill></fills>
+    <borders count="2"><border/><border><left style="thin"><color rgb="FFDDE3EE"/></left><right style="thin"><color rgb="FFDDE3EE"/></right><top style="thin"><color rgb="FFDDE3EE"/></top><bottom style="thin"><color rgb="FFDDE3EE"/></bottom></border></borders>
+    <cellStyleXfs count="1"><xf/></cellStyleXfs>
+    <cellXfs count="3"><xf/><xf fontId="1" fillId="2" borderId="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center" wrapText="1" readingOrder="2"/></xf>
+      <xf borderId="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="top" wrapText="1" readingOrder="2"/></xf></cellXfs></styleSheet>`;
+  return zip([
+    { name: '[Content_Types].xml', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>` },
+    { name: '_rels/.rels', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>` },
+    { name: 'xl/workbook.xml', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><bookViews><workbookView/></bookViews><sheets><sheet name="דבב" sheetId="1" r:id="rId1"/></sheets><definedNames><definedName name="_xlnm._FilterDatabase" localSheetId="0" hidden="1">'דבב'!$A$1:$${colName(cols.length - 1)}$${sol.length + 1}</definedName></definedNames></workbook>` },
+    { name: 'xl/_rels/workbook.xml.rels', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>` },
+    { name: 'xl/worksheets/sheet1.xml', data: sheet },
+    { name: 'xl/styles.xml', data: styles },
+  ]);
+}
+function compact(sol, qs) {   // [{name, sub, items:[{q, a, note}]}] — only answered questions
+  return sol.map(s => ({
+    s, name: fullName(s),
+    sub: [roleOf(s), s.interviewDate ? 'ראיון ' + fmtDate(s.interviewDate) : '', s.interviewer ? 'מראיין: ' + s.interviewer : ''].filter(Boolean).join(' · '),
+    alerts: alerts(s),
+    items: qs.map(q => ({ q: q.title, a: answerText(s, q, false), note: ans(s, q).note || '' })).filter(i => i.a || i.note),
+  }));
+}
+function docx(sol, qs, title) {
+  const run = (t, o = {}) => `<w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>${o.b ? '<w:b/><w:bCs/>' : ''}${o.color ? `<w:color w:val="${o.color}"/>` : ''}<w:sz w:val="${o.sz || 20}"/><w:szCs w:val="${o.sz || 20}"/><w:rtl/></w:rPr><w:t xml:space="preserve">${x(t)}</w:t></w:r>`;
+  const par = (runs, o = {}) => `<w:p><w:pPr><w:bidi/><w:spacing w:before="${o.before || 0}" w:after="${o.after || 40}"/>${o.border ? '<w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="1F5BD8"/></w:pBdr>' : ''}<w:jc w:val="left"/></w:pPr>${runs}</w:p>`;
+  let body = par(run(title, { b: 1, sz: 32, color: '1F5BD8' }), { after: 60 }) + par(run(`דבב · ${sol.length} ${sol.length === 1 ? 'חייל' : 'חיילים'} · ${new Date().toLocaleDateString('he-IL')}`, { sz: 18, color: '5B6680' }), { after: 200 });
+  for (const c of compact(sol, qs)) {
+    body += par(run(c.name, { b: 1, sz: 26 }) + (c.alerts.length ? run('   ⚠ ' + c.alerts.join(', '), { b: 1, sz: 20, color: 'D9480F' }) : ''), { before: 200, border: 1 });
+    if (c.sub) body += par(run(c.sub, { sz: 18, color: '5B6680' }));
+    for (const it of c.items) body += par(run(it.q + ': ', { b: 1 }) + run(it.a) + (it.note ? run('  (הערה: ' + it.note + ')', { color: '5B6680' }) : ''));
+  }
+  const doc = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="900" w:right="900" w:bottom="900" w:left="900" w:header="400" w:footer="400" w:gutter="0"/><w:bidi/></w:sectPr></w:body></w:document>`;
+  return zip([
+    { name: '[Content_Types].xml', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>` },
+    { name: '_rels/.rels', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>` },
+    { name: 'word/document.xml', data: doc },
+  ]);
+}
+function txt(sol, qs, title) {
+  let t = `${title}\nדבב · ${sol.length} ${sol.length === 1 ? 'חייל' : 'חיילים'} · ${new Date().toLocaleDateString('he-IL')}\n`;
+  for (const c of compact(sol, qs)) {
+    t += `\n==== ${c.name} ====\n` + (c.sub ? c.sub + '\n' : '') + (c.alerts.length ? 'התראות: ' + c.alerts.join(', ') + '\n' : '');
+    for (const it of c.items) t += `${it.q}: ${it.a}${it.note ? ` (הערה: ${it.note})` : ''}\n`;
+  }
+  return t;
+}
+function printHtml(sol, qs, title) {
+  const cards = compact(sol, qs).map(c => `<section><h2>${esc(c.name)}${c.alerts.length ? ` <span class="al">⚠ ${esc(c.alerts.join(', '))}</span>` : ''}</h2>${c.sub ? `<div class="sub">${esc(c.sub)}</div>` : ''}
+    <p>${c.items.map(i => `<b>${esc(i.q)}:</b> ${esc(i.a)}${i.note ? ` <i>(${esc(i.note)})</i>` : ''}`).join(' &nbsp;·&nbsp; ')}</p></section>`).join('');
+  return `<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><title>${esc(title)}</title><style>
+    @page { size: A4; margin: 12mm; } body { font: 10.5pt/1.45 Arial, sans-serif; color: #14213D; margin: 0; }
+    h1 { font-size: 18pt; color: #1F5BD8; margin: 0 0 2px; } .meta { color: #5B6680; font-size: 9pt; margin-bottom: 10px; }
+    section { break-inside: avoid; border-bottom: 1.5px solid #E2E7F0; padding: 7px 0; } h2 { font-size: 12pt; margin: 0 0 2px; }
+    .al { color: #D9480F; font-size: 10pt; } .sub { color: #5B6680; font-size: 9pt; } p { margin: 3px 0 0; } i { color: #5B6680; }
+  </style></head><body><h1>${esc(title)}</h1><div class="meta">דבב · ${sol.length} ${sol.length === 1 ? 'חייל' : 'חיילים'} · ${new Date().toLocaleDateString('he-IL')}</div>${cards}</body></html>`;
+}
+function download(name, data, mime) {
+  const bytes = typeof data === 'string' ? new TextEncoder().encode(data) : data;
+  if (A && A.saveFile) {   // the Android app saves to Downloads and opens "share"
+    let s = ''; for (let i = 0; i < bytes.length; i += 32768) s += String.fromCharCode(...bytes.subarray(i, i + 32768));
+    A.saveFile(name, mime, btoa(s)); return;
+  }
+  const blob = new Blob([bytes], { type: mime });
+  const file = new File([blob], name, { type: mime });
+  if (navigator.canShare && navigator.canShare({ files: [file] }) && matchMedia('(pointer:coarse)').matches) { navigator.share({ files: [file], title: name }).catch(() => {}); return; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+function printPdf(html, title) {
+  if (A && A.print) { A.print(html, title); return; }
+  // the print view replaces the page while printing (an iframe doesn't print on iPhone)
+  let area = document.getElementById('printArea');
+  if (!area) { area = document.createElement('div'); area.id = 'printArea'; document.body.append(area); }
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  area.innerHTML = [...doc.head.querySelectorAll('style')].map(x => x.outerHTML.replace(/body \{/g, '#printArea {')).join('') + doc.body.innerHTML;
+  const oldTitle = document.title; document.title = title;
+  setTimeout(() => { window.print(); document.title = oldTitle; }, 100);
+  toast(/iPhone|iPad/.test(navigator.userAgent) ? 'בחלון ההדפסה: כפתור השיתוף ← שמירה בקבצים' : 'בחלון ההדפסה בוחרים "שמירה כ-PDF"');
+}
+const safeName = s => s.replace(/[\\/:*?"<>|]/g, '').trim() || 'דבב';
+
+function exportDialog(sol, title) {
+  if (!sol.length) { toast('אין חיילים לייצא'); return; }
+  const T = S.template;
+  let fmt = 'xlsx';
+  sheet(`<h2>ייצוא: ${esc(title)}</h2><p class="muted">${sol.length === 1 ? 'החייל' : sol.length + ' חיילים'}</p>
+    <div class="chips" data-fmt>${[['xlsx', 'אקסל'], ['docx', 'וורד'], ['pdf', 'PDF'], ['txt', 'טקסט (ל-Claude)']].map(([k, l]) => `<button class="chip ${k === fmt ? 'on' : ''}" data-v="${k}">${l}</button>`).join('')}</div>
+    <label class="lbl" style="margin-top:14px">אילו שאלות לכלול</label>
+    <div class="row" style="flex-wrap:wrap;gap:6px;margin-bottom:6px"><button class="btn ghost" data-all>הכול</button><button class="btn ghost" data-noid>בלי מידע מזהה</button><button class="btn ghost" data-none>כלום</button></div>
+    <div data-qs style="max-height:34vh;overflow:auto;border:1px solid var(--line);border-radius:12px;padding:4px 8px">${T.map(q => `<label class="check-row"><input type="checkbox" data-q="${q.id}" checked><span>${esc(q.title)}${q.sensitive ? ' <span class="badge y">מזהה</span>' : ''}</span></label>`).join('')}</div>
+    <button class="btn primary block" style="margin-top:14px" data-go>${svg('share')} ייצוא</button>`, (el, close) => {
+    el.querySelectorAll('[data-fmt] .chip').forEach(c => c.onclick = () => { el.querySelectorAll('[data-fmt] .chip').forEach(z => z.classList.remove('on')); c.classList.add('on'); fmt = c.dataset.v;
+      if (fmt === 'txt') el.querySelectorAll('[data-q]').forEach(b => b.checked = !T.find(q => q.id === b.dataset.q).sensitive); });
+    const set = f => el.querySelectorAll('[data-q]').forEach(b => b.checked = f(T.find(q => q.id === b.dataset.q)));
+    $('[data-all]', el).onclick = () => set(() => true);
+    $('[data-noid]', el).onclick = () => set(q => !q.sensitive);
+    $('[data-none]', el).onclick = () => set(() => false);
+    $('[data-go]', el).onclick = () => {
+      const qs = T.filter(q => el.querySelector(`[data-q="${q.id}"]`).checked);
+      const name = safeName(title) + ' – דבב';
+      if (fmt === 'xlsx') download(name + '.xlsx', xlsx(sol, qs), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      if (fmt === 'docx') download(name + '.docx', docx(sol, qs, title), 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      if (fmt === 'txt') download(name + '.txt', txt(sol, qs, title), 'text/plain;charset=utf-8');
+      if (fmt === 'pdf') printPdf(printHtml(sol, qs, title), name);
+      close();
+    };
+  });
+}
+
+// ---------- dabab files: a list for another commander, or a full backup
+function shareList(l) {
+  const sol = Object.fromEntries(l.members.filter(id => S.soldiers[id]).map(id => [id, S.soldiers[id]]));
+  download(safeName(l.name) + '.dabab', JSON.stringify({ dabab: 1, kind: 'list', template: S.template, lists: [l], soldiers: sol }), 'application/json');
+}
+function backup() {
+  download(`גיבוי דבב ${new Date().toLocaleDateString('he-IL').replace(/\./g, '-')}.dabab`, JSON.stringify({ dabab: 1, kind: 'backup', template: S.template, lists: S.lists, soldiers: S.soldiers, settings: { ...S.settings } }), 'application/json');
+  S.settings.lastBackup = Date.now(); save(); if (route.name === 'home' || route.name === 'settings') render();
+}
+async function importFile(f) {
+  let d;
+  try { d = JSON.parse(await f.text()); } catch (e) { toast('זה לא קובץ דבב'); return; }
+  if (!d || !d.dabab || !d.lists) { toast('זה לא קובץ דבב'); return; }
+  const n = Object.keys(d.soldiers || {}).length;
+  const msg = d.kind === 'backup' ? `קובץ גיבוי: ${d.lists.length} רשימות, ${n} חיילים. להוסיף למה שכבר יש?` : `רשימה "${d.lists[0].name}" עם ${n} חיילים. להוסיף?`;
+  if (!await confirmBox(msg, 'הוספה', false)) return;
+  // questions this device doesn't have yet are added to the template, so no answer is lost
+  for (const q of d.template || []) if (!S.template.some(t => t.id === q.id)) S.template.push(q);
+  const idQ = byKey('id');
+  const map = {};
+  for (const [id, s] of Object.entries(d.soldiers || {})) {
+    const tz = idQ && (s.answers || {})[idQ.id] && s.answers[idQ.id].value;
+    const same = Object.values(S.soldiers).find(o => o.id === id || (tz && idQ && ans(o, idQ).value === tz));
+    if (same) { if ((s.updated || 0) > (same.updated || 0)) Object.assign(same, s, { id: same.id }); map[id] = same.id; }
+    else { const nid = S.soldiers[id] ? uid() : id; S.soldiers[nid] = { ...s, id: nid }; map[id] = nid; }
+  }
+  for (const l of d.lists) {
+    const mine = S.lists.find(x => x.id === l.id) || S.lists.find(x => x.name === l.name);
+    const members = l.members.map(id => map[id]).filter(Boolean);
+    if (mine) mine.members = [...new Set([...mine.members, ...members])];
+    else S.lists.push({ ...l, members });
+  }
+  if (d.kind === 'backup' && d.settings) S.settings.lastBackup = Date.now();
+  save(); go({ name: 'home' }, false); toast('נוסף ✓');
+}
+
+// ====================================================================== lock screen and start
+function lockScreen() {
+  let pin = '';
+  const el = document.createElement('div'); el.className = 'lock';
+  el.innerHTML = `<div style="text-align:center"><div class="avatar" style="background:var(--acc);margin:0 auto;width:64px;height:64px">${svg('lock', 'width="30" height="30"')}</div>
+    <h2 style="margin:14px 0 0">דבב</h2><div class="muted">הקלידו את הקוד</div><div class="pin-dots"></div>
+    <div class="keypad">${[1, 2, 3, 4, 5, 6, 7, 8, 9, '', 0, '⌫'].map(k => `<button ${k === '' ? 'style="visibility:hidden"' : ''} data-k="${k}">${k}</button>`).join('')}</div>
+    <button class="btn" style="margin-top:16px" data-ok>כניסה</button></div>`;
+  document.body.append(el);
+  const dots = () => { el.querySelector('.pin-dots').innerHTML = Array.from({ length: Math.max(4, pin.length) }, (_, i) => `<i class="${i < pin.length ? 'on' : ''}"></i>`).join(''); };
+  const tryIt = async () => {
+    try { await unlock(pin); el.remove(); render(); }
+    catch (e) { pin = ''; dots(); toast('קוד שגוי'); }
+  };
+  el.querySelectorAll('[data-k]').forEach(b => b.onclick = () => { const k = b.dataset.k; if (k === '⌫') pin = pin.slice(0, -1); else if (k !== '') pin += k; dots(); });
+  el.querySelector('[data-ok]').onclick = tryIt;
+  document.addEventListener('keydown', function kd(e) { if (!document.body.contains(el)) return document.removeEventListener('keydown', kd); if (/^\d$/.test(e.key)) pin += e.key; if (e.key === 'Backspace') pin = pin.slice(0, -1); if (e.key === 'Enter') tryIt(); dots(); });
+  dots();
+}
+window.__dababImport = (name, text) => importFile({ text: async () => text });   // a file opened with the Android app
+if (meta().locked && localStorage.getItem(ENC)) { S = blank(); lockScreen(); }
+else { loadPlain(); render(); }
+</script>
+</body>
+</html>
